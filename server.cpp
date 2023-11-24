@@ -9,6 +9,9 @@
 #include <iostream>
 #include <list>
 #include <random>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 #define BUFF_SIZE 8192
 #define BACKLOG 2
 char buff[BUFF_SIZE];
@@ -28,7 +31,25 @@ typedef struct Account
   }
 } Account;
 
+typedef struct Token
+{
+  string token;
+  std::chrono::high_resolution_clock::time_point creation_time;
+  Token(string _token)
+  {
+    token = _token;
+    creation_time = std::chrono::high_resolution_clock::now();
+  }
+  bool check_valid()
+  {
+    auto current_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::hours>(current_time - creation_time);
+    return duration.count() < 4;
+  }
+} Token;
+
 list<Account> accounts;
+list<Token> tokens;
 
 void get_accounts(list<Account> *accounts)
 {
@@ -48,10 +69,10 @@ void get_accounts(list<Account> *accounts)
 
 string generate_token()
 {
-  std::mt19937 generator(static_cast<unsigned int>(time(0)));
+  mt19937 generator(static_cast<unsigned int>(time(0)));
 
   // Define the characters that can be used in the random string
-  const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   // Create a distribution for the random index
   uniform_int_distribution<> distribution(0, characters.size() - 1);
@@ -122,4 +143,8 @@ int main()
 {
   get_accounts(&accounts);
   print_accounts(accounts);
+  Token token = Token(generate_token());
+  int a;
+  cin >> a;
+  cout << token.check_valid();
 }
