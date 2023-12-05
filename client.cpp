@@ -13,7 +13,7 @@
 #include <ctime>
 #include <iomanip>
 
-#define BUFF_SIZE 8192
+#define BUFF_SIZE 1024
 
 using namespace std;
 
@@ -24,21 +24,27 @@ char buff[BUFF_SIZE];
 struct sockaddr_in server_addr;
 int bytes_sent, bytes_received;
 
+typedef struct CMD
+{
+  char header[6];
+  char body[1024];
+  char cmd[1024];
+  CMD(char _header[], char _body[])
+  {
+    strcpy(header, _header);
+    strcpy(body, _body);
+    strcpy(cmd, "CMD");
+    strcat(cmd, header);
+    strcat(cmd, "_");
+    strcat(cmd, body);
+  }
+} CMD;
+
 void print_menu()
 {
   cout << "Menu:" << endl;
   cout << "1: Login" << endl;
   cout << "2: End" << endl;
-}
-
-string CMD(string id, string body)
-{
-  string cmd;
-  cmd.append("CMD");
-  cmd.append(id);
-  cmd.append("_");
-  cmd.append(body);
-  return cmd;
 }
 
 void *sendThread(void *arg)
@@ -69,8 +75,10 @@ void *sendThread(void *arg)
       strcpy(buff, username);
       strcat(buff, "#");
       strcat(buff, password);
-      cout << CMD("01", buff) << endl;
-      bytes_sent = send(client_sock, CMD("01", buff).c_str(), BUFF_SIZE, 0);
+      cout << CMD("01", buff).cmd << endl;
+      char cmd[1024];
+      strcpy(cmd, CMD("01", buff).cmd);
+      bytes_sent = send(client_sock, cmd, strlen(cmd) + 1, 0);
       break;
     case 2:
       close(client_sock);

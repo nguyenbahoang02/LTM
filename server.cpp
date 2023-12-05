@@ -13,7 +13,7 @@
 #include <ctime>
 #include <iomanip>
 
-#define BUFF_SIZE 8192
+#define BUFF_SIZE 1024
 #define BACKLOG 2
 
 char buff[BUFF_SIZE];
@@ -141,7 +141,7 @@ void print_accounts(list<Account> accounts)
   }
 }
 
-void CMD_Handler(string cmd);
+void CMD_Handler(string cmd, int conn_sock);
 int CMD(string header);
 
 void *handle_client(void *connect_sock)
@@ -158,12 +158,7 @@ void *handle_client(void *connect_sock)
     else
     {
       cout << buff << endl;
-      string cmd = buff;
-      size_t pos = cmd.find("_");
-      string header = cmd.substr(0, pos);
-      string body = cmd.substr(pos + 1);
-      int cmd_id = CMD(header);
-      cout << cmd_id << endl;
+      CMD_Handler(buff, conn_sock);
     }
   }
 }
@@ -224,4 +219,24 @@ int CMD(string header)
   int cmd = (header[3] - '0') * 10;
   cmd += (header[4] - '0');
   return cmd;
+}
+
+void CMD_Handler(string cmd, int conn_sock)
+{
+  size_t pos = cmd.find("_");
+  string header = cmd.substr(0, pos);
+  string body = cmd.substr(pos + 1);
+  int cmd_id = CMD(header);
+  cout << cmd_id << endl;
+  switch (cmd_id)
+  {
+  case 1:
+  {
+    size_t pos_1 = body.find("#");
+    string username_1 = body.substr(0, pos_1);
+    string password_1 = body.substr(pos_1 + 1);
+
+    break;
+  }
+  }
 }
