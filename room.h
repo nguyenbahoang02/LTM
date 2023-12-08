@@ -5,13 +5,13 @@ using namespace std;
 
 typedef struct Room
 {
-  Account *player_1;
-  Account *player_2;
+  Account player_1;
+  Account player_2;
   string room_id;
   Board board;
   int player_turn;
   int game_state; // 0=paused 1=is playing 2=over
-  Room(int width, int height, int win_condition, Account *_player_1, Account *_player_2)
+  Room(int width, int height, int win_condition, Account _player_1, Account _player_2)
   {
     player_turn = 1;
     board = Board(width, height, win_condition);
