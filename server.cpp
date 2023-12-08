@@ -1,6 +1,5 @@
-#include "room.h"
 #include "cmd.h"
-
+#include "account.h"
 #define BUFF_SIZE 1024
 #define BACKLOG 2
 
@@ -9,75 +8,7 @@ int PORT;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 using namespace std;
 
-list<Account> accounts;
-
-void get_accounts(list<Account> *accounts)
-{
-  FILE *f = fopen("account.txt", "r");
-  char username[1024];
-  char password[1024];
-  char status;
-  if (f == NULL)
-    return;
-  while (fscanf(f, "%s %s %c ", username, password, &status) == 3)
-  {
-    Account acc = Account(username, password, status);
-    accounts->push_back(acc);
-  }
-  fclose(f);
-}
-
-int login(string username, string password) // 0=wrong password 1=login success 2=already logged in at another location
-{
-  for (Account &a : accounts)
-  {
-    if (a.username == username)
-    {
-      if (a.password == password)
-      {
-        if (!a.is_login())
-        {
-          a.login();
-          return 1;
-        }
-        return 2;
-      }
-      else
-        return 0;
-    }
-  }
-  return 0;
-}
-
-void logout(string username)
-{
-  for (Account &a : accounts)
-  {
-    if (a.username == username)
-    {
-      a.status = '0';
-    }
-  }
-}
-
-int sign_up(string username, string password) // 0=username exists 1=sign up success
-{
-  for (Account a : accounts)
-  {
-    if (a.username == username)
-      return 0;
-  }
-  Account new_acc = Account(username, password, '0');
-  return 1;
-}
-
-void print_accounts(list<Account> accounts)
-{
-  for (Account a : accounts)
-  {
-    cout << a.username << "\t" << a.password << "\t" << a.status << endl;
-  }
-}
+AccountManager account_manager = AccountManager("account.txt");
 
 void CMD_Handler(CMD cmd, int conn_sock);
 
@@ -102,7 +33,6 @@ void *handle_client(void *connect_sock)
 
 int main(int argc, char *argv[])
 {
-  get_accounts(&accounts);
   pthread_t client_thread;
   if (argc != 2)
   {
@@ -185,7 +115,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     string username_1 = cmd.body.substr(0, pos_1);
     string password_1 = cmd.body.substr(pos_1 + 1);
     pthread_mutex_lock(&lock);
-    int login_result = login(username_1, password_1);
+    int login_result = account_manager.log_in_account(username_1, password_1);
+    account_manager.print_accounts();
     pthread_mutex_unlock(&lock);
     switch (login_result)
     {

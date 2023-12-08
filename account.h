@@ -83,3 +83,74 @@ string generate_token()
 
   return token;
 }
+
+typedef struct AccountManager
+{
+  list<Account> accounts;
+  void log_out_account(string username)
+  {
+    for (Account &a : accounts)
+    {
+      if (a.username == username)
+      {
+        a.status = '0';
+      }
+    }
+  }
+  // 0=wrong password 1=login success 2=already logged in at another location
+  int log_in_account(string username, string password)
+  {
+    for (Account &a : accounts)
+    {
+      if (a.username == username)
+      {
+        if (a.password == password)
+        {
+          if (!a.is_login())
+          {
+            a.login();
+            return 1;
+          }
+          return 2;
+        }
+        else
+          return 0;
+      }
+    }
+    return 0;
+  }
+  // 0=username exists 1=sign up success
+  int sign_up_account(string username, string password)
+  {
+    for (Account a : accounts)
+    {
+      if (a.username == username)
+        return 0;
+    }
+    Account new_acc = Account(username, password, '0');
+    accounts.push_back(new_acc);
+    return 1;
+  }
+  void print_accounts()
+  {
+    for (Account a : accounts)
+    {
+      cout << a.username << "\t" << a.password << "\t" << a.status << endl;
+    }
+  }
+  AccountManager(char *file)
+  {
+    FILE *f = fopen(file, "r");
+    char username[1024];
+    char password[1024];
+    char status;
+    if (f == NULL)
+      return;
+    while (fscanf(f, "%s %s %c ", username, password, &status) == 3)
+    {
+      Account acc = Account(username, password, status);
+      accounts.push_back(acc);
+    }
+    fclose(f);
+  }
+} AccountManager;
