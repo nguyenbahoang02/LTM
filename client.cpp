@@ -10,6 +10,7 @@ int client_sock;
 char buff[BUFF_SIZE];
 struct sockaddr_in server_addr;
 int bytes_sent, bytes_received;
+string token;
 
 void print_menu()
 {
@@ -73,7 +74,7 @@ void *recvThread(void *arg)
       return 0;
     }
     buff[bytes_received] = '\0';
-    printf("%s\n", buff);
+    cout << CMD(buff).token << endl;
     if (buff[0] == 'G')
     {
       close(client_sock);

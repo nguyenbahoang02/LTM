@@ -21,10 +21,22 @@ typedef struct CMD
   string body;
   int id;
   char cmd[1024];
+  string token;
   void get_id()
   {
     id = (header[3] - '0') * 10;
     id += (header[4] - '0');
+  }
+  CMD()
+  {
+  }
+  void get_token()
+  {
+    size_t pos = header.find("&");
+    if (pos != string::npos)
+    {
+      token = header.substr(pos + 1);
+    }
   }
   // descontruct
   CMD(string _cmd)
@@ -32,6 +44,7 @@ typedef struct CMD
     size_t pos = _cmd.find("_");
     header = _cmd.substr(0, pos);
     body = _cmd.substr(pos + 1);
+    get_token();
     get_id();
   }
   // construct
@@ -39,6 +52,16 @@ typedef struct CMD
   {
     header = "CMD";
     header.append(_header);
+    body = _body;
+    strcpy(cmd, header.c_str());
+    strcat(cmd, "_");
+    strcat(cmd, body.c_str());
+    get_id();
+  }
+  // construct
+  CMD(string _header, string _body)
+  {
+    header = _header;
     body = _body;
     strcpy(cmd, header.c_str());
     strcat(cmd, "_");

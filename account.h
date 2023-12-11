@@ -58,7 +58,7 @@ typedef struct Account
     status = '1';
     token = Token();
   }
-  void logout()
+  void log_out()
   {
     status = '0';
   }
@@ -87,18 +87,18 @@ string generate_token()
 typedef struct AccountManager
 {
   list<Account> accounts;
-  void log_out_account(string username)
+  void log_out_account(string token)
   {
     for (Account &a : accounts)
     {
-      if (a.username == username)
+      if (a.token.token == token)
       {
-        a.status = '0';
+        a.log_out();
       }
     }
   }
   // 0=wrong password 1=login success 2=already logged in at another location
-  int log_in_account(string username, string password)
+  string log_in_account(string username, string password)
   {
     for (Account &a : accounts)
     {
@@ -109,15 +109,15 @@ typedef struct AccountManager
           if (!a.is_login())
           {
             a.login();
-            return 1;
+            return a.token.token;
           }
-          return 2;
+          return "2";
         }
         else
-          return 0;
+          return "0";
       }
     }
-    return 0;
+    return "0";
   }
   // 0=username exists 1=sign up success
   int sign_up_account(string username, string password)
@@ -137,6 +137,11 @@ typedef struct AccountManager
     {
       cout << a.username << "\t" << a.password << "\t" << a.status << endl;
     }
+  }
+  // send message to an account
+  void send_message_to_account(char *message, int connect_sock)
+  {
+    send(connect_sock, message, strlen(message), 0);
   }
   AccountManager(char *file)
   {

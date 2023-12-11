@@ -107,34 +107,63 @@ int main(int argc, char *argv[])
 
 void CMD_Handler(CMD cmd, int conn_sock)
 {
+  CMD response_cmd;
   switch (cmd.id)
   {
   case 1: // login
   {
-    size_t pos_1 = cmd.body.find("#");
-    string username_1 = cmd.body.substr(0, pos_1);
-    string password_1 = cmd.body.substr(pos_1 + 1);
+    size_t pos = cmd.body.find("#");
+    string username = cmd.body.substr(0, pos);
+    string password = cmd.body.substr(pos + 1);
     pthread_mutex_lock(&lock);
-    int login_result = account_manager.log_in_account(username_1, password_1);
+    string login_result = account_manager.log_in_account(username, password);
     account_manager.print_accounts();
     pthread_mutex_unlock(&lock);
-    switch (login_result)
+    if (login_result == "0")
     {
-    case 0: // 0 wrong password
-      break;
-    case 1: // 1 login success
-      break;
-    case 2: // 2 already logged in
-      break;
+      response_cmd = CMD(cmd.header, "WRONG_PASSWORD");
     }
+    else if (login_result == "2")
+    {
+      response_cmd = CMD(cmd.header, "ACCOUNT_ALREADY_LOGGED_IN_AT_ANOTHER_LOCATION");
+    }
+    else
+    {
+      response_cmd = CMD(cmd.header.append("&").append(login_result), "LOGIN_SUCCESS");
+    }
+    account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
   }
   case 2: // sign up
   {
+    size_t pos = cmd.body.find("#");
+    string username = cmd.body.substr(0, pos);
+    string password = cmd.body.substr(pos + 1);
+    pthread_mutex_lock(&lock);
+    int sign_up_result = account_manager.sign_up_account(username, password);
+    account_manager.print_accounts();
+    pthread_mutex_unlock(&lock);
+    switch (sign_up_result)
+    {
+    case 0: // username exist
+    {
+      response_cmd = CMD(cmd.header, "USERNAME_EXISTS");
+    }
+    break;
+    case 1:
+    {
+      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESS");
+      break;
+    }
+    }
+    account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
   }
   case 3: // log out
   {
+    account_manager.log_out_account(cmd.body);
+    response_cmd = CMD(cmd.header, "LOG_OUT_SUCCESS");
+    account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
   }
   case 4: // change password
