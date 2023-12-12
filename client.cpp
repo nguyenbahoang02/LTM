@@ -48,7 +48,7 @@ void *sendThread(void *arg)
       strcat(buff, "#");
       strcat(buff, password);
       char cmd[1024];
-      strcpy(cmd, CMD("01", buff).cmd);
+      strcpy(cmd, CMD("CMD01", buff).cmd);
       bytes_sent = send(client_sock, cmd, strlen(cmd) + 1, 0);
       break;
     case 2:

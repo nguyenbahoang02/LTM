@@ -50,7 +50,7 @@ typedef struct CMD
   // construct
   CMD(char _header[], char _body[])
   {
-    header = "CMD";
+    header = "";
     header.append(_header);
     body = _body;
     strcpy(cmd, header.c_str());
@@ -62,6 +62,19 @@ typedef struct CMD
   CMD(string _header, string _body)
   {
     header = _header;
+    body = _body;
+    strcpy(cmd, header.c_str());
+    strcat(cmd, "_");
+    strcat(cmd, body.c_str());
+    get_id();
+  }
+  // construct with token
+  CMD(string _header, string _token, string _body)
+  {
+    header = _header;
+    header.append("&");
+    token = _token;
+    header.append(token);
     body = _body;
     strcpy(cmd, header.c_str());
     strcat(cmd, "_");

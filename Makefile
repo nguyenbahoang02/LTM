@@ -5,6 +5,5 @@ SRC = server.cpp
 
 all:
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRC)
-	$(CXX) $(CXXFLAGS) -o client client.cpp
 clean:
 	rm -f $(TARGET)
