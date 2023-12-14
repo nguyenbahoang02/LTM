@@ -129,7 +129,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     }
     else
     {
-      response_cmd = CMD(cmd.header.append("&").append(login_result), "LOGIN_SUCCESS");
+      response_cmd = CMD(cmd.header.append("&").append(login_result), "LOGIN_SUCCESSFULLY");
     }
     account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
@@ -152,7 +152,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     break;
     case 1:
     {
-      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESS");
+      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESSFULLY");
       break;
     }
     }
@@ -162,7 +162,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
   case 3: // log out
   {
     account_manager.log_out_account(cmd.body);
-    response_cmd = CMD(cmd.header, "LOG_OUT_SUCCESS");
+    response_cmd = CMD(cmd.header, "LOG_OUT_SUCCESSFULLY");
     account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
   }

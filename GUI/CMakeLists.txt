@@ -23,6 +23,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(GUI
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        signup.h signup.cpp signup.ui
+        signin.h signin.cpp signin.ui
+
+        homepage.h homepage.cpp homepage.ui
+        token.txt
+
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET GUI APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

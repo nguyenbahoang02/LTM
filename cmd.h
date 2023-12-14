@@ -44,6 +44,9 @@ typedef struct CMD
     size_t pos = _cmd.find("_");
     header = _cmd.substr(0, pos);
     body = _cmd.substr(pos + 1);
+    strcpy(cmd, header.c_str());
+    strcat(cmd, "_");
+    strcat(cmd, body.c_str());
     get_token();
     get_id();
   }
