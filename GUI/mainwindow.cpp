@@ -1,13 +1,14 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "../cmd.h"
-
+#include "token.h"
+#include "homepage.h"
 #define BUFF_SIZE 1024
 int SERV_PORT;
 char SERV_IP[100];
 int server_sock;
 struct sockaddr_in server_addr;
-
+QStackedWidget *stackedWidget;
 using namespace std;
 
 MainWindow::MainWindow(int argc, char *argv[])
@@ -29,10 +30,8 @@ MainWindow::MainWindow(int argc, char *argv[])
     {
 
     }
-    sign_in.stackedWidget = ui->stackedWidget;
-    sign_in.server_sock = ::server_sock;
-    sign_up.server_sock = ::server_sock;
-    home_page.server_sock = ::server_sock;
+    stackedWidget = ui->stackedWidget;
+    server_sock = ::server_sock;
 
 }
 

@@ -21,14 +21,18 @@ void *handle_client(void *connect_sock)
   {
     memset(buff, '\0', (strlen(buff) + 1));
     bytes_received = recv(conn_sock, buff, BUFF_SIZE - 1, 0);
-    if (bytes_received < 0)
-      perror("\nError: ");
+    if (bytes_received <= 0)
+    {
+      close(conn_sock);
+      break;
+    }
     else
     {
       cout << buff << endl;
       CMD_Handler(CMD(buff), conn_sock);
     }
   }
+  pthread_exit(connect_sock);
 }
 
 int main(int argc, char *argv[])
@@ -117,7 +121,6 @@ void CMD_Handler(CMD cmd, int conn_sock)
     string password = cmd.body.substr(pos + 1);
     pthread_mutex_lock(&lock);
     string login_result = account_manager.log_in_account(username, password);
-    account_manager.print_accounts();
     pthread_mutex_unlock(&lock);
     if (login_result == "0")
     {
@@ -152,7 +155,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     break;
     case 1:
     {
-      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESSFULLY");
+      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESS");
       break;
     }
     }
@@ -170,5 +173,11 @@ void CMD_Handler(CMD cmd, int conn_sock)
   {
     break;
   }
+  case 5:
+  {
+
+    break;
   }
+  }
+  account_manager.print_accounts();
 }

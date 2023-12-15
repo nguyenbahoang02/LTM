@@ -27,7 +27,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         signin.h signin.cpp signin.ui
 
         homepage.h homepage.cpp homepage.ui
-        token.txt
+        token.h
+
+
 
 
     )

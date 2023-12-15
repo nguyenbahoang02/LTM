@@ -14,12 +14,11 @@ class HomePage : public QWidget
 public:
     explicit HomePage(QWidget *parent = nullptr);
     ~HomePage();
-    int server_sock;
 
 private slots:
-    void on_save_btn_clicked();
+    void on_log_out_btn_clicked();
 
-private:
+public:
     Ui::HomePage *ui;
 };
 

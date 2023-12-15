@@ -2,7 +2,6 @@
 #define SIGNIN_H
 
 #include <QWidget>
-#include <QStackedWidget>
 
 namespace Ui {
 class SignIn;
@@ -15,8 +14,6 @@ class SignIn : public QWidget
 public:
     explicit SignIn(QWidget *parent = nullptr);
     ~SignIn();
-    int server_sock;
-    QStackedWidget *stackedWidget;
 
 public slots:
     void on_sign_up_clicked();

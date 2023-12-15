@@ -52,19 +52,6 @@
     <string>Find a match</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
-   <property name="geometry">
-    <rect>
-     <x>250</x>
-     <y>310</y>
-     <width>271</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="placeholderText">
-    <string>Enter board size (&gt;2)</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
@@ -101,25 +88,7 @@
     <string>Board size</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="save_btn">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>380</y>
-     <width>88</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>13</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </widget>
-  <widget class="QScrollArea" name="list_players">
+  <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
      <x>560</x>
@@ -140,7 +109,30 @@
       <height>479</height>
      </rect>
     </property>
+    <widget class="QListView" name="listView">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>221</width>
+       <height>192</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="log_out_btn">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>50</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Log out</string>
+   </property>
   </widget>
  </widget>
  <resources/>

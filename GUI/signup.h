@@ -14,7 +14,11 @@ class SignUp : public QWidget
 public:
     explicit SignUp(QWidget *parent = nullptr);
     ~SignUp();
-    int server_sock;
+
+private slots:
+    void on_sign_in_btn_clicked();
+
+    void on_sign_up_clicked();
 
 private:
     Ui::SignUp *ui;
