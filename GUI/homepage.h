@@ -18,6 +18,8 @@ public:
 private slots:
     void on_log_out_btn_clicked();
 
+    void on_find_match_btn_clicked();
+
 public:
     Ui::HomePage *ui;
 };

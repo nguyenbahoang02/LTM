@@ -173,7 +173,55 @@ void CMD_Handler(CMD cmd, int conn_sock)
   {
     break;
   }
-  case 5:
+  case 5: // get online players
+  {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD(cmd.header, "YOU NEED TO RE LOGIN");
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    list<string> users = account_manager.get_online_players(cmd.token);
+    string list_players = "";
+    for (string u : users)
+    {
+      list_players.append("$");
+      list_players.append(u);
+    }
+    response_cmd = CMD(cmd.header, list_players);
+    break;
+  }
+  case 6: // find a match
+  {
+    break;
+  }
+  case 7: // send challenge
+  {
+
+    break;
+  }
+  case 8: // accept challenge
+  {
+
+    break;
+  }
+  case 9: // make a move
+  {
+
+    break;
+  }
+  case 10: // pause/continue game
+  {
+
+    break;
+  }
+  case 11: // get record
+  {
+
+    break;
+  }
+  case 12:
   {
 
     break;

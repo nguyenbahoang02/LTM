@@ -2,7 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "../cmd.h"
 #include "token.h"
-#include "homepage.h"
+
 #define BUFF_SIZE 1024
 int SERV_PORT;
 char SERV_IP[100];

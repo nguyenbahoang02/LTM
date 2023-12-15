@@ -87,6 +87,17 @@ string generate_token()
 typedef struct AccountManager
 {
   list<Account> accounts;
+  bool check_user_token(string token)
+  {
+    for (Account &a : accounts)
+    {
+      if (a.token.token == token && a.token.check_valid())
+      {
+        return true;
+      }
+    }
+    return false;
+  }
   void log_out_account(string token)
   {
     for (Account &a : accounts)
@@ -157,5 +168,19 @@ typedef struct AccountManager
       accounts.push_back(acc);
     }
     fclose(f);
+  }
+  list<string> get_online_players(string token)
+  {
+    list<string> online_players;
+    for (Account a : accounts)
+    {
+      if (a.status == '0')
+        continue;
+      if (a.token.token != token)
+      {
+        online_players.push_back(a.username);
+      }
+    }
+    return online_players;
   }
 } AccountManager;
