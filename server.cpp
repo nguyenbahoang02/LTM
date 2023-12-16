@@ -12,6 +12,23 @@ AccountManager account_manager = AccountManager("account.txt");
 
 void CMD_Handler(CMD cmd, int conn_sock);
 
+void *handle_match(void *arg)
+{
+  while (1)
+  {
+    if (account_manager.finding_match_players.size() < 2)
+    {
+      usleep(5000000);
+      continue;
+    }
+    list<string> matched_players = account_manager.match_players();
+    for (string s : matched_players)
+    {
+      cout << s << endl;
+    }
+  }
+}
+
 void *handle_client(void *connect_sock)
 {
   pthread_detach(pthread_self());
@@ -44,6 +61,7 @@ int main(int argc, char *argv[])
     return 0;
   }
   PORT = atoi(argv[1]);
+  pthread_create(&client_thread, NULL, &handle_match, NULL);
   // Test board
   // Board board = Board(10, 10, 5);
   // while (1)
@@ -164,7 +182,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
   }
   case 3: // log out
   {
+    pthread_mutex_lock(&lock);
     account_manager.log_out_account(cmd.body);
+    pthread_mutex_unlock(&lock);
     response_cmd = CMD(cmd.header, "LOG_OUT_SUCCESSFULLY");
     account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
@@ -186,14 +206,27 @@ void CMD_Handler(CMD cmd, int conn_sock)
     string list_players = "";
     for (string u : users)
     {
-      list_players.append("$");
       list_players.append(u);
+      list_players.append("$");
     }
+    if (list_players == "")
+      list_players.append("NO_ONLINE_PLAYERS");
     response_cmd = CMD(cmd.header, list_players);
+    account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
   }
   case 6: // find a match
   {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD(cmd.header, "YOU NEED TO RE LOGIN");
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    pthread_mutex_lock(&lock);
+    account_manager.find_match(cmd.token);
+    pthread_mutex_unlock(&lock);
     break;
   }
   case 7: // send challenge

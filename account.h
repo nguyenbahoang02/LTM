@@ -40,14 +40,16 @@ typedef struct Account
   string password;
   char status; // 0=okay to login 1=already logged in at another location 2=ingame
   Token token;
+  int elo;
   Account()
   {
   }
-  Account(string _username, string _password, char _status)
+  Account(string _username, string _password, char _status, int _elo)
   {
     username = _username;
     password = _password;
     status = _status;
+    elo = _elo;
   }
   bool is_login()
   {
@@ -87,6 +89,7 @@ string generate_token()
 typedef struct AccountManager
 {
   list<Account> accounts;
+  list<Account> finding_match_players;
   bool check_user_token(string token)
   {
     for (Account &a : accounts)
@@ -138,7 +141,7 @@ typedef struct AccountManager
       if (a.username == username)
         return 0;
     }
-    Account new_acc = Account(username, password, '0');
+    Account new_acc = Account(username, password, '0', 0);
     accounts.push_back(new_acc);
     return 1;
   }
@@ -154,17 +157,78 @@ typedef struct AccountManager
   {
     send(connect_sock, message, strlen(message), 0);
   }
+  void find_match(string token)
+  {
+    for (Account a : accounts)
+    {
+      if (a.token.token == token)
+      {
+        finding_match_players.push_back(a);
+      }
+    }
+  }
+  void remove_from_find_match(string username)
+  {
+    list<Account> list;
+    for (Account a : finding_match_players)
+    {
+      if (a.username != username)
+        list.push_back(a);
+    }
+    finding_match_players = list;
+  }
+  void cancel_find_match(string token)
+  {
+    list<Account> list;
+    for (Account a : finding_match_players)
+    {
+      if (a.token.token != token)
+        list.push_back(a);
+    }
+    finding_match_players = list;
+  }
+  list<string> match_players()
+  {
+    list<string> matched_players;
+    int elo_gap = 100;
+    while (1)
+    {
+      for (Account a : finding_match_players)
+      {
+        for (Account b : finding_match_players)
+        {
+          if (a.username != b.username)
+          {
+            if (abs(a.elo - b.elo) <= elo_gap)
+            {
+              matched_players.push_back(a.username);
+              matched_players.push_back(b.username);
+              remove_from_find_match(a.username);
+              remove_from_find_match(b.username);
+              return matched_players;
+            }
+          }
+        }
+      }
+      if (matched_players.empty())
+      {
+        usleep(5000000);
+        elo_gap += 50;
+      }
+    }
+  }
   AccountManager(char *file)
   {
     FILE *f = fopen(file, "r");
     char username[1024];
     char password[1024];
     char status;
+    int elo;
     if (f == NULL)
       return;
-    while (fscanf(f, "%s %s %c ", username, password, &status) == 3)
+    while (fscanf(f, "%s %s %c %d", username, password, &status, &elo) == 4)
     {
-      Account acc = Account(username, password, status);
+      Account acc = Account(username, password, status, elo);
       accounts.push_back(acc);
     }
     fclose(f);

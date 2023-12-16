@@ -10,54 +10,37 @@ int client_sock;
 char buff[BUFF_SIZE];
 struct sockaddr_in server_addr;
 int bytes_sent, bytes_received;
-string token;
-
-void print_menu()
-{
-  cout << "Menu:" << endl;
-  cout << "1: Login" << endl;
-  cout << "2: End" << endl;
-}
+string token = "1";
 
 void *sendThread(void *arg)
 {
+  memset(buff, '\0', (strlen(buff) + 1));
+  char username[BUFF_SIZE];
+  char password[BUFF_SIZE];
+  cout << "Enter username: ";
+  cin >> username;
+  cout << "Enter password: ";
+  cin >> password;
+  strcpy(buff, username);
+  strcat(buff, "#");
+  strcat(buff, password);
+  char cmd[1024];
+  strcpy(cmd, CMD("CMD01", buff).cmd);
+  bytes_sent = send(client_sock, cmd, strlen(cmd), 0);
   while (1)
   {
-    print_menu();
-    memset(buff, '\0', (strlen(buff) + 1));
-    cin >> buff;
-    int code = 0;
-    try
-    {
-      code = atoi(buff);
-    }
-    catch (const exception &e)
-    {
-    }
-    switch (code)
-    {
-    case 1:
-      memset(buff, '\0', (strlen(buff) + 1));
-      char username[BUFF_SIZE];
-      char password[BUFF_SIZE];
-      cout << "Enter username: ";
-      cin >> username;
-      cout << "Enter password: ";
-      cin >> password;
-      strcpy(buff, username);
-      strcat(buff, "#");
-      strcat(buff, password);
-      char cmd[1024];
-      strcpy(cmd, CMD("CMD01", buff).cmd);
-      bytes_sent = send(client_sock, cmd, strlen(cmd) + 1, 0);
-      break;
-    case 2:
-      close(client_sock);
-      exit(0);
-      break;
-    default:
-      break;
-    }
+    int a;
+    cin >> a;
+    break;
+  }
+  string message = "CMD06&";
+  message.append(token);
+  cout << token;
+  message.append("_");
+  message.append("1");
+  send(client_sock, message.c_str(), 18, 0);
+  while (1)
+  {
   }
 }
 
@@ -65,20 +48,22 @@ void *recvThread(void *arg)
 {
   while (1)
   {
-    memset(buff, '\0', (strlen(buff) + 1));
-    bytes_received = recv(client_sock, buff, BUFF_SIZE - 1, 0);
+    char response[BUFF_SIZE];
+    memset(response, '\0', strlen(response) + 1);
+    bytes_received = recv(client_sock, response, BUFF_SIZE - 1, 0);
     if (bytes_received < 0)
     {
       perror("Error: ");
       close(client_sock);
       return 0;
     }
-    buff[bytes_received] = '\0';
-    cout << CMD(buff).token << endl;
-    if (buff[0] == 'G')
+    response[bytes_received] = '\0';
+    cout << response << endl;
+    CMD cmd = CMD(response);
+    if (cmd.id == 1)
     {
-      close(client_sock);
-      exit(0);
+      token = cmd.token;
+      cout << token << endl;
     }
   }
 }
