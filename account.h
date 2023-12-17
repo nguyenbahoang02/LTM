@@ -41,6 +41,7 @@ typedef struct Account
   char status; // 0=okay to login 1=already logged in at another location 2=ingame
   Token token;
   int elo;
+  int connection_sock;
   Account()
   {
   }
@@ -112,7 +113,7 @@ typedef struct AccountManager
     }
   }
   // 0=wrong password 1=login success 2=already logged in at another location
-  string log_in_account(string username, string password)
+  string log_in_account(string username, string password, int conn_sock)
   {
     for (Account &a : accounts)
     {
@@ -123,6 +124,7 @@ typedef struct AccountManager
           if (!a.is_login())
           {
             a.login();
+            a.connection_sock = conn_sock;
             return a.token.token;
           }
           return "2";
@@ -187,9 +189,9 @@ typedef struct AccountManager
     }
     finding_match_players = list;
   }
-  list<string> match_players()
+  list<Account> match_players()
   {
-    list<string> matched_players;
+    list<Account> matched_players;
     int elo_gap = 100;
     while (1)
     {
@@ -201,8 +203,8 @@ typedef struct AccountManager
           {
             if (abs(a.elo - b.elo) <= elo_gap)
             {
-              matched_players.push_back(a.username);
-              matched_players.push_back(b.username);
+              matched_players.push_back(a);
+              matched_players.push_back(b);
               remove_from_find_match(a.username);
               remove_from_find_match(b.username);
               return matched_players;

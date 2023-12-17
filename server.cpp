@@ -21,10 +21,9 @@ void *handle_match(void *arg)
       usleep(5000000);
       continue;
     }
-    list<string> matched_players = account_manager.match_players();
-    for (string s : matched_players)
+    list<Account> matched_players = account_manager.match_players();
+    for (Account s : matched_players)
     {
-      cout << s << endl;
     }
   }
 }
@@ -138,7 +137,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     string username = cmd.body.substr(0, pos);
     string password = cmd.body.substr(pos + 1);
     pthread_mutex_lock(&lock);
-    string login_result = account_manager.log_in_account(username, password);
+    string login_result = account_manager.log_in_account(username, password, conn_sock);
     pthread_mutex_unlock(&lock);
     if (login_result == "0")
     {
