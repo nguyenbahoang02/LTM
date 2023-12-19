@@ -12,6 +12,13 @@ AccountManager account_manager = AccountManager("account.txt");
 
 void CMD_Handler(CMD cmd, int conn_sock);
 
+void *handle_room(void *arg)
+{
+  list<Account> matched_players = *((list<Account> *)arg);
+  Account player_1 = matched_players.back();
+  Account player_2 = matched_players.front();
+}
+
 void *handle_match(void *arg)
 {
   while (1)
@@ -22,9 +29,13 @@ void *handle_match(void *arg)
       continue;
     }
     list<Account> matched_players = account_manager.match_players();
+    CMD cmd = CMD("CMD06", "FOUND_A_MATCH");
     for (Account s : matched_players)
     {
+      account_manager.send_message_to_account(cmd.cmd, s.connection_sock);
     }
+    pthread_t room_thread;
+    pthread_create(&room_thread, NULL, &handle_room, (void *)&matched_players);
   }
 }
 
@@ -141,15 +152,15 @@ void CMD_Handler(CMD cmd, int conn_sock)
     pthread_mutex_unlock(&lock);
     if (login_result == "0")
     {
-      response_cmd = CMD(cmd.header, "WRONG_PASSWORD");
+      response_cmd = CMD(cmd.header, "WRONG_PASSWORD\0");
     }
     else if (login_result == "2")
     {
-      response_cmd = CMD(cmd.header, "ACCOUNT_ALREADY_LOGGED_IN_AT_ANOTHER_LOCATION");
+      response_cmd = CMD(cmd.header, "ACCOUNT_ALREADY_LOGGED_IN_AT_ANOTHER_LOCATION\0");
     }
     else
     {
-      response_cmd = CMD(cmd.header.append("&").append(login_result), "LOGIN_SUCCESSFULLY");
+      response_cmd = CMD(cmd.header.append("&").append(login_result), "LOGIN_SUCCESSFULLY\0");
     }
     account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
@@ -161,18 +172,17 @@ void CMD_Handler(CMD cmd, int conn_sock)
     string password = cmd.body.substr(pos + 1);
     pthread_mutex_lock(&lock);
     int sign_up_result = account_manager.sign_up_account(username, password);
-    account_manager.print_accounts();
     pthread_mutex_unlock(&lock);
     switch (sign_up_result)
     {
     case 0: // username exist
     {
-      response_cmd = CMD(cmd.header, "USERNAME_EXISTS");
+      response_cmd = CMD(cmd.header, "USERNAME_EXISTS\0");
     }
     break;
     case 1:
     {
-      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESS");
+      response_cmd = CMD(cmd.header, "SIGN_UP_SUCCESS\0");
       break;
     }
     }
@@ -184,7 +194,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     pthread_mutex_lock(&lock);
     account_manager.log_out_account(cmd.body);
     pthread_mutex_unlock(&lock);
-    response_cmd = CMD(cmd.header, "LOG_OUT_SUCCESSFULLY");
+    response_cmd = CMD(cmd.header, "LOG_OUT_SUCCESSFULLY\0");
     account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
   }
@@ -197,7 +207,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "YOU NEED TO RE LOGIN");
+      response_cmd = CMD(cmd.header, "0");
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -209,7 +219,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
       list_players.append("$");
     }
     if (list_players == "")
-      list_players.append("NO_ONLINE_PLAYERS");
+      list_players.append("@");
+    list_players.append("\0");
     response_cmd = CMD(cmd.header, list_players);
     account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
     break;
@@ -219,7 +230,7 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "YOU NEED TO RE LOGIN");
+      response_cmd = CMD(cmd.header, "0");
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -228,13 +239,29 @@ void CMD_Handler(CMD cmd, int conn_sock)
     pthread_mutex_unlock(&lock);
     break;
   }
-  case 7: // send challenge
+  case 7: // cancel find match
   {
-
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD(cmd.header, "0");
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    pthread_mutex_lock(&lock);
+    account_manager.cancel_find_match(cmd.token);
+    pthread_mutex_unlock(&lock);
     break;
   }
-  case 8: // accept challenge
+  case 8: // send challenge
   {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD(cmd.header, "0");
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
 
     break;
   }

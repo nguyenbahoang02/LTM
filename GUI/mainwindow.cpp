@@ -2,6 +2,8 @@
 #include "./ui_mainwindow.h"
 #include "../cmd.h"
 #include "token.h"
+#include "DataReceiver.h"
+#include <QThread>
 
 #define BUFF_SIZE 1024
 int SERV_PORT;
@@ -32,6 +34,21 @@ MainWindow::MainWindow(int argc, char *argv[])
     }
     stackedWidget = ui->stackedWidget;
     server_sock = ::server_sock;
+
+    data_receiver = new DataReceiver();
+    thread = new QThread();
+
+    data_receiver->moveToThread(thread);
+
+    connect(thread, &QThread::started, data_receiver, &DataReceiver::GetSignal);
+
+    connect(data_receiver, &DataReceiver::login_response_signal, &sign_in, &SignIn::handle_response);
+    connect(data_receiver, &DataReceiver::signup_response_signal, &sign_up, &SignUp::handle_response);
+    connect(data_receiver, &DataReceiver::logout_response_signal, &home_page, &HomePage::handle_logout_response);
+    connect(data_receiver, &DataReceiver::find_match_response_signal, &home_page, &HomePage::handle_find_match_response);
+    connect(data_receiver, &DataReceiver::player_list_signal, &home_page, &HomePage::handle_player_list_response);
+
+    thread->start();
 
 }
 

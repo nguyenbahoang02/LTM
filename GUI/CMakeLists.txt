@@ -28,6 +28,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 
         homepage.h homepage.cpp homepage.ui
         token.h
+        DataReceiver.cpp
+        DataReceiver.h
 
 
 

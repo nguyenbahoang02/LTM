@@ -5,6 +5,7 @@
 #include "signup.h"
 #include "signin.h"
 #include "homepage.h"
+#include "DataReceiver.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -26,5 +27,7 @@ private:
     SignUp sign_up;
     SignIn sign_in;
     HomePage home_page;
+    DataReceiver *data_receiver;
+    QThread *thread;
 };
 #endif // MAINWINDOW_H

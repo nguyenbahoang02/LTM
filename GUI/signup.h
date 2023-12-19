@@ -15,9 +15,11 @@ public:
     explicit SignUp(QWidget *parent = nullptr);
     ~SignUp();
 
+public slots:
+    void handle_response(std::string message);
+
 private slots:
     void on_sign_in_btn_clicked();
-
     void on_sign_up_clicked();
 
 private:

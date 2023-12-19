@@ -40,17 +40,10 @@ void SignUp::on_sign_up_clicked()
     body.append(username).append("#").append(password);
     CMD cmd = CMD("CMD02",body);
     ::send(server_sock, cmd.cmd,  strlen(cmd.cmd), 0);
-    memset(buff, '\0', (strlen(buff) + 1));
-    bytes_received = recv(server_sock, buff, BUFF_SIZE - 1, 0);
-    if (bytes_received < 0)
-    {
-        perror("Error: ");
-        ::close(server_sock);
-        return ;
-    }
-    cout << buff << endl;
-    CMD response_cmd = CMD(buff);
-    cout << response_cmd.cmd << endl;
+}
+
+void SignUp::handle_response(string message){
+    CMD response_cmd = CMD(message);
     if(response_cmd.body!="USERNAME_EXISTS"){
         QMessageBox::information(this, tr("SIGN UP"), tr("Sign up successfully."));
     }else{

@@ -94,7 +94,7 @@
      <x>560</x>
      <y>90</y>
      <width>221</width>
-     <height>481</height>
+     <height>451</height>
     </rect>
    </property>
    <property name="widgetResizable">
@@ -106,19 +106,9 @@
       <x>0</x>
       <y>0</y>
       <width>219</width>
-      <height>479</height>
+      <height>449</height>
      </rect>
     </property>
-    <widget class="QListView" name="listView">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>221</width>
-       <height>192</height>
-      </rect>
-     </property>
-    </widget>
    </widget>
   </widget>
   <widget class="QPushButton" name="log_out_btn">
@@ -132,6 +122,19 @@
    </property>
    <property name="text">
     <string>Log out</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="get_online_players">
+   <property name="geometry">
+    <rect>
+     <x>630</x>
+     <y>550</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
    </property>
   </widget>
  </widget>

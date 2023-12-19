@@ -42,23 +42,15 @@ void SignIn::on_sign_in_clicked()
     body.append(username).append("#").append(password);
     CMD cmd = CMD("CMD01",body);
     ::send(server_sock, cmd.cmd,  strlen(cmd.cmd), 0);
-    memset(buff, '\0', (strlen(buff) + 1));
-    bytes_received = recv(server_sock, buff, BUFF_SIZE - 1, 0);
-    if (bytes_received < 0)
-    {
-        perror("Error: ");
-        ::close(server_sock);
-        return ;
-    }
-    CMD response_cmd = CMD(buff);
-    if(response_cmd.body=="LOGIN_SUCCESSFULLY"){ 
+}
+
+void SignIn::handle_response(string message){
+    CMD response_cmd = CMD(message);
+    if(response_cmd.body=="LOGIN_SUCCESSFULLY"){
         token = response_cmd.token;
         stackedWidget->setCurrentIndex(2);
         QMessageBox::information(this, tr("LOGIN"), tr("Login successfully."));
     }else{
         QMessageBox::critical(this,tr("LOGIN"),tr(response_cmd.body.c_str()));
     }
-
-
 }
-
