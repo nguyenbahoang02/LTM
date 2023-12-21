@@ -30,6 +30,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         token.h
         DataReceiver.cpp
         DataReceiver.h
+        gamewindow.h gamewindow.cpp gamewindow.ui
 
 
 

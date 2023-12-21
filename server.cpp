@@ -12,13 +12,6 @@ AccountManager account_manager = AccountManager("account.txt");
 
 void CMD_Handler(CMD cmd, int conn_sock);
 
-void *handle_room(void *arg)
-{
-  list<Account> matched_players = *((list<Account> *)arg);
-  Account player_1 = matched_players.back();
-  Account player_2 = matched_players.front();
-}
-
 void *handle_match(void *arg)
 {
   while (1)
@@ -29,13 +22,12 @@ void *handle_match(void *arg)
       continue;
     }
     list<Account> matched_players = account_manager.match_players();
-    CMD cmd = CMD("CMD06", "FOUND_A_MATCH");
+    CMD cmd = CMD("CMD06", generate_token(), "1");
     for (Account s : matched_players)
     {
       account_manager.send_message_to_account(cmd.cmd, s.connection_sock);
     }
-    pthread_t room_thread;
-    pthread_create(&room_thread, NULL, &handle_room, (void *)&matched_players);
+    account_manager.create_room(16, 16, 5, matched_players.front().username, matched_players.back().username, generate_token());
   }
 }
 
@@ -55,7 +47,7 @@ void *handle_client(void *connect_sock)
     }
     else
     {
-      cout << buff << endl;
+      cout << "Receive: " << buff << endl;
       CMD_Handler(CMD(buff), conn_sock);
     }
   }
@@ -262,29 +254,53 @@ void CMD_Handler(CMD cmd, int conn_sock)
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
-
+    response_cmd = CMD("CMD08", account_manager.get_player_from_token(cmd.token));
+    account_manager.send_message_to_account(response_cmd.cmd, cmd.body);
     break;
   }
-  case 9: // make a move
+  case 9: // accept challenge
+  {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD(cmd.header, "0");
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    string player_1 = cmd.body;
+    string player_2 = account_manager.get_player_from_token(cmd.token);
+    response_cmd = CMD("CMD09", account_manager.create_room(16, 16, 5, player_1, player_2), "1");
+    account_manager.send_message_to_account(response_cmd.cmd, player_1);
+    account_manager.send_message_to_account(response_cmd.cmd, player_2);
+    break;
+  }
+  case 10: // decline challenge
+  {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD(cmd.header, "0");
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    response_cmd = CMD("CMD10", account_manager.get_player_from_token(cmd.token));
+    account_manager.send_message_to_account(response_cmd.cmd, cmd.body);
+    break;
+  }
+  case 11: // accept/decline found match
+  {
+    size_t pos = cmd.body.find("%");
+    string room_id = cmd.body.substr(0, pos);
+    string accept_status = cmd.body.substr(pos + 1);
+    bool status = accept_status == "ACCEPT" ? true : false;
+    account_manager.set_player_accept_status(room_id, account_manager.get_player_from_token(cmd.token), status);
+    break;
+  }
+  case 12: // decline found match
   {
 
     break;
   }
-  case 10: // pause/continue game
-  {
-
-    break;
   }
-  case 11: // get record
-  {
-
-    break;
-  }
-  case 12:
-  {
-
-    break;
-  }
-  }
-  account_manager.print_accounts();
+  // account_manager.print_accounts();
 }

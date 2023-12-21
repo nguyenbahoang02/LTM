@@ -1,4 +1,4 @@
-#include "DataReceiver.h".
+#include "DataReceiver.h"
 #include "token.h"
 #include <QThread>
 #include "../cmd.h"
@@ -11,6 +11,7 @@ void DataReceiver::GetSignal() {
     while(1){
         ::recv(server_sock, message, BUFF_SIZE - 1, 0);
         CMD cmd = CMD(message);
+        cout << cmd.cmd << endl;
         switch(cmd.id)
         {
         case 1:
@@ -35,7 +36,19 @@ void DataReceiver::GetSignal() {
             break;
         }
         case 8:{
-            emit player_list_signal(message);
+            emit received_challenge_signal(message);
+            break;
+        }
+        case 9: {
+            emit created_room_signal(message);
+            break;
+        }
+        case 10:{
+            emit declined_challenge_signal(message);
+            break;
+        }
+        case 11: {
+            emit accept_find_match_signal(message);
             break;
         }
         }

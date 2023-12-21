@@ -20,6 +20,7 @@ MainWindow::MainWindow(int argc, char *argv[])
     ui->stackedWidget->insertWidget(0,&sign_in);
     ui->stackedWidget->insertWidget(1,&sign_up);
     ui->stackedWidget->insertWidget(2,&home_page);
+    ui->stackedWidget->insertWidget(3,&game_window);
     ui->stackedWidget->setCurrentIndex(0);
     SERV_PORT = atoi(argv[2]);
     strcpy(SERV_IP, argv[1]);
@@ -47,7 +48,10 @@ MainWindow::MainWindow(int argc, char *argv[])
     connect(data_receiver, &DataReceiver::logout_response_signal, &home_page, &HomePage::handle_logout_response);
     connect(data_receiver, &DataReceiver::find_match_response_signal, &home_page, &HomePage::handle_find_match_response);
     connect(data_receiver, &DataReceiver::player_list_signal, &home_page, &HomePage::handle_player_list_response);
-
+    connect(data_receiver, &DataReceiver::received_challenge_signal, &home_page, &HomePage::handle_received_challenge);
+    connect(data_receiver, &DataReceiver::created_room_signal, &home_page, &HomePage::handle_created_room_response);
+    connect(data_receiver, &DataReceiver::declined_challenge_signal, &home_page, &HomePage::handle_declined_challenge_response);
+    connect(data_receiver, &DataReceiver::accept_find_match_signal, &home_page, &HomePage::handle_accept_find_match_response);
     thread->start();
 
 }

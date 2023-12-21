@@ -38,15 +38,30 @@ typedef struct CMD
       token = header.substr(pos + 1);
     }
   }
+  string extract_cmd(const std::string &input)
+  {
+    list<string> result;
+    stringstream ss(input);
+    string item;
+    while (getline(ss, item, '?'))
+    {
+      result.push_back(item);
+    }
+    result.pop_back();
+    return result.front();
+  }
   // descontruct
   CMD(string _cmd)
   {
+    string refined_cmd = extract_cmd(_cmd);
     size_t pos = _cmd.find("_");
-    header = _cmd.substr(0, pos);
-    body = _cmd.substr(pos + 1);
+    header = refined_cmd.substr(0, pos);
+    body = refined_cmd.substr(pos + 1);
     strcpy(cmd, header.c_str());
     strcat(cmd, "_");
     strcat(cmd, body.c_str());
+    strcat(cmd, "?");
+    strcat(cmd, "padding");
     get_token();
     get_id();
   }
@@ -59,6 +74,8 @@ typedef struct CMD
     strcpy(cmd, header.c_str());
     strcat(cmd, "_");
     strcat(cmd, body.c_str());
+    strcat(cmd, "?");
+    strcat(cmd, "padding");
     get_id();
   }
   // construct
@@ -69,6 +86,8 @@ typedef struct CMD
     strcpy(cmd, header.c_str());
     strcat(cmd, "_");
     strcat(cmd, body.c_str());
+    strcat(cmd, "?");
+    strcat(cmd, "padding");
     get_id();
   }
   // construct with token
@@ -82,6 +101,8 @@ typedef struct CMD
     strcpy(cmd, header.c_str());
     strcat(cmd, "_");
     strcat(cmd, body.c_str());
+    strcat(cmd, "?");
+    strcat(cmd, "padding");
     get_id();
   }
 } CMD;

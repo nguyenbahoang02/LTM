@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HomePage</class>
- <widget class="QWidget" name="HomePage">
+ <class>gamewindow</class>
+ <widget class="QWidget" name="gamewindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,12 +13,12 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="player_1">
    <property name="geometry">
     <rect>
-     <x>610</x>
-     <y>60</y>
-     <width>131</width>
+     <x>70</x>
+     <y>50</y>
+     <width>71</width>
      <height>21</height>
     </rect>
    </property>
@@ -28,16 +28,16 @@
     </font>
    </property>
    <property name="text">
-    <string>Online players</string>
+    <string>Player 1</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="find_match_btn">
+  <widget class="QLabel" name="player_2">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>470</y>
-     <width>141</width>
-     <height>51</height>
+     <x>430</x>
+     <y>50</y>
+     <width>71</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
@@ -45,37 +45,16 @@
      <pointsize>14</pointsize>
     </font>
    </property>
-   <property name="styleSheet">
-    <string notr="true"/>
-   </property>
    <property name="text">
-    <string>Find a match</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>220</y>
-     <width>141</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>16</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Game settings</string>
+    <string>Player 2</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>310</y>
-     <width>131</width>
+     <x>650</x>
+     <y>50</y>
+     <width>71</width>
      <height>21</height>
     </rect>
    </property>
@@ -85,16 +64,34 @@
     </font>
    </property>
    <property name="text">
-    <string>Board size AxA</string>
+    <string>Chat log</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="player_turn">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>50</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Player turn</string>
    </property>
   </widget>
   <widget class="QScrollArea" name="scrollArea">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>90</y>
+     <x>570</x>
+     <y>80</y>
      <width>221</width>
-     <height>451</height>
+     <height>421</height>
     </rect>
    </property>
    <property name="widgetResizable">
@@ -106,51 +103,69 @@
       <x>0</x>
       <y>0</y>
       <width>219</width>
-      <height>449</height>
+      <height>419</height>
      </rect>
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="log_out_btn">
+  <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>50</y>
+     <x>570</x>
+     <y>510</y>
+     <width>171</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>750</x>
+     <y>510</y>
+     <width>41</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Send</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>80</y>
+     <width>471</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout"/>
+  </widget>
+  <widget class="QPushButton" name="pause">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>510</y>
      <width>88</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>Log out</string>
+    <string>Pause</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="get_online_players">
-   <property name="geometry">
-    <rect>
-     <x>630</x>
-     <y>550</y>
-     <width>88</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Refresh</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="board_size">
+  <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>310</y>
-     <width>113</width>
+     <y>510</y>
+     <width>88</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>16</string>
-   </property>
-   <property name="placeholderText">
-    <string notr="true">&gt;2</string>
+    <string>Surrender</string>
    </property>
   </widget>
  </widget>

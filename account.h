@@ -1,17 +1,4 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <iostream>
-#include <list>
-#include <random>
-#include <chrono>
-#include <ctime>
-#include <iomanip>
+#include "room.h"
 
 using namespace std;
 
@@ -91,6 +78,123 @@ typedef struct AccountManager
 {
   list<Account> accounts;
   list<Account> finding_match_players;
+  list<Room> rooms;
+  void remove_room(string room_id)
+  {
+    list<Room> new_room_list;
+    for (Room r : rooms)
+    {
+      if (r.room_id != room_id)
+      {
+        new_room_list.push_back(r);
+      }
+    }
+  }
+  void set_player_accept_status(string room_id, string username, bool status)
+  {
+    for (Room &r : rooms)
+    {
+      if (r.room_id == room_id)
+      {
+        if (r.player_1 == username)
+        {
+          r.player_1_accept_status = status;
+          r.received_response++;
+        }
+        else
+        {
+          r.player_2_accept_status = status;
+          r.received_response++;
+        }
+        if (r.received_response == 2)
+        {
+          if (r.player_1_accept_status == true && r.player_2_accept_status == true)
+          {
+            send_message_to_account("CMD11_1?padding", r.player_1);
+            send_message_to_account("CMD11_1?padding", r.player_2);
+            return;
+          }
+          if (r.player_1_accept_status == true && r.player_2_accept_status == false)
+          {
+            char buff[128];
+            strcpy(buff, "CMD11_");
+            strcat(buff, r.player_2.c_str());
+            strcat(buff, "?padding");
+            send_message_to_account(buff, r.player_1);
+          }
+          if (r.player_1_accept_status == false && r.player_2_accept_status == true)
+          {
+            char buff[128];
+            strcpy(buff, "CMD11_");
+            strcat(buff, r.player_1.c_str());
+            strcat(buff, "?padding");
+            send_message_to_account(buff, r.player_2);
+          }
+          if (r.player_1_accept_status == false && r.player_2_accept_status == false)
+          {
+            char buff[128];
+            strcpy(buff, "CMD11_");
+            strcat(buff, r.player_1.c_str());
+            strcat(buff, "?padding");
+            send_message_to_account(buff, r.player_2);
+            strcpy(buff, "CMD11_");
+            strcat(buff, r.player_2.c_str());
+            strcat(buff, "?padding");
+            send_message_to_account(buff, r.player_1);
+          }
+          remove_room(r.room_id);
+          return;
+        }
+        break;
+      }
+    }
+  }
+  void create_room(int width, int height, int win_condition, string _player_1, string _player_2, string room_id)
+  {
+    rooms.push_back(Room(width, height, win_condition, _player_1, _player_2, room_id));
+  }
+  string create_room(int width, int height, int win_condition, string _player_1, string _player_2)
+  {
+    string room_id = generate_token();
+    rooms.push_back(Room(width, height, win_condition, _player_1, _player_2, room_id));
+    return room_id;
+  }
+  void pause_match(string id)
+  {
+    for (Room &r : rooms)
+    {
+      if (r.room_id == id)
+      {
+        r.pause();
+        send_message_to_account("CMD15_0", r.player_1);
+        send_message_to_account("CMD15_0", r.player_2);
+        return;
+      }
+    }
+  }
+  void un_pause_match(string id)
+  {
+    for (Room &r : rooms)
+    {
+      if (r.room_id == id)
+      {
+        r.un_pause();
+        send_message_to_account("CMD15_1", r.player_1);
+        send_message_to_account("CMD15_1", r.player_2);
+        return;
+      }
+    }
+  }
+  string get_player_from_token(string token)
+  {
+    for (Account a : accounts)
+    {
+      if (a.token.token == token)
+      {
+        return a.username;
+      }
+    }
+  }
   bool check_user_token(string token)
   {
     for (Account &a : accounts)
@@ -157,7 +261,20 @@ typedef struct AccountManager
   // send message to an account
   void send_message_to_account(char *message, int connect_sock)
   {
+    cout << "Send: " << message << endl;
     send(connect_sock, message, strlen(message), 0);
+  }
+  void send_message_to_account(char *message, string username)
+  {
+    for (Account a : accounts)
+    {
+      if (a.username == username)
+      {
+        cout << "Send: " << message << endl;
+        send(a.connection_sock, message, strlen(message), 0);
+        return;
+      }
+    }
   }
   void find_match(string token)
   {
