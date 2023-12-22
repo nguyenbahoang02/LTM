@@ -41,6 +41,7 @@ void DataReceiver::GetSignal() {
         }
         case 9: {
             emit created_room_signal(message);
+            emit create_board_signal(message);
             break;
         }
         case 10:{
@@ -49,6 +50,15 @@ void DataReceiver::GetSignal() {
         }
         case 11: {
             emit accept_find_match_signal(message);
+            break;
+        }
+        case 12:{
+            emit accept_find_match_signal(message);
+            emit create_board_signal(message);
+            break;
+        }
+        case 13:{
+            emit update_board_signal(message);
             break;
         }
         }

@@ -20,6 +20,8 @@ signals:
     void declined_challenge_signal(std::string message);
     void created_room_signal(std::string message);
     void accept_find_match_signal(std::string message);
+    void create_board_signal(std::string message);
+    void update_board_signal(std::string message);
 };
 
 #endif // DATARECEIVER_H

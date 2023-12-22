@@ -22,13 +22,13 @@ typedef struct Room
     room_id = _room_id;
     game_state = 1;
   }
-  // 0 wrong logic  1-2 win 3 moveable 4 game is in pause state
+  // 0 wrong logic  1-2 win 3 game is in pause state 4: player1 move 5: player2 move
   int play(int x, int y)
   {
     Move move = Move(x, y, player_turn);
     if (game_state == 0)
     {
-      return 4;
+      return 3;
     }
     if (board.move(move))
     {
@@ -38,7 +38,7 @@ typedef struct Room
         return move.flag;
       }
       player_turn = player_turn == 1 ? 2 : 1;
-      return 3;
+      return player_turn == 2 ? 4 : 5;
     }
     return 0;
   }

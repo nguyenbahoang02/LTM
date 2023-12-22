@@ -187,7 +187,7 @@ void HomePage::handle_created_room_response(string message){
 
 void HomePage::handle_accept_find_match_response(string message){
     CMD response_cmd = CMD(message);
-    if(response_cmd.body=="1"){
+    if(response_cmd.body!="0"){
         stackedWidget->setCurrentIndex(3);
     }else{
         char buff[BUFF_SIZE];

@@ -79,6 +79,14 @@ typedef struct AccountManager
   list<Account> accounts;
   list<Account> finding_match_players;
   list<Room> rooms;
+  Room find_room(string room_id)
+  {
+    for (Room r : rooms)
+    {
+      if (r.room_id == room_id)
+        return r;
+    }
+  }
   void remove_room(string room_id)
   {
     list<Room> new_room_list;
@@ -87,6 +95,16 @@ typedef struct AccountManager
       if (r.room_id != room_id)
       {
         new_room_list.push_back(r);
+      }
+    }
+  }
+  int make_a_move(string room_id, int x, int y)
+  {
+    for (Room &r : rooms)
+    {
+      if (r.room_id == room_id)
+      {
+        return r.play(x, y);
       }
     }
   }
@@ -110,8 +128,8 @@ typedef struct AccountManager
         {
           if (r.player_1_accept_status == true && r.player_2_accept_status == true)
           {
-            send_message_to_account("CMD11_1?padding", r.player_1);
-            send_message_to_account("CMD11_1?padding", r.player_2);
+            send_message_to_account("CMD12_16_1?padding", r.player_1);
+            send_message_to_account("CMD12_16_2?padding", r.player_2);
             return;
           }
           if (r.player_1_accept_status == true && r.player_2_accept_status == false)

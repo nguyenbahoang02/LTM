@@ -64,30 +64,6 @@ int main(int argc, char *argv[])
   }
   PORT = atoi(argv[1]);
   pthread_create(&client_thread, NULL, &handle_match, NULL);
-  // Test board
-  // Board board = Board(10, 10, 5);
-  // while (1)
-  // {
-  //   cout << "Nguoi choi 1 di: " << endl;
-  //   int x, y;
-  //   cin >> x >> y;
-  //   board.move(Move(x, y, 1));
-  //   board.print_board();
-  //   if (board.check_winner(Move(x, y, 1)) != 0)
-  //   {
-  //     cout << "Nguoi choi 1 thang" << endl;
-  //     break;
-  //   }
-  //   cout << "Nguoi choi 2 di: " << endl;
-  //   cin >> x >> y;
-  //   board.move(Move(x, y, 2));
-  //   board.print_board();
-  //   if (board.check_winner(Move(x, y, 2)) != 0)
-  //   {
-  //     cout << "Nguoi choi 2 thang" << endl;
-  //     break;
-  //   }
-  // }
   int listen_sock, conn_sock;
   struct sockaddr_in server;
   struct sockaddr_in client;
@@ -269,9 +245,11 @@ void CMD_Handler(CMD cmd, int conn_sock)
     }
     string player_1 = cmd.body;
     string player_2 = account_manager.get_player_from_token(cmd.token);
-    response_cmd = CMD("CMD09", account_manager.create_room(16, 16, 5, player_1, player_2), "1");
-    account_manager.send_message_to_account(response_cmd.cmd, player_1);
-    account_manager.send_message_to_account(response_cmd.cmd, player_2);
+    string room_id = account_manager.create_room(16, 16, 5, player_1, player_2);
+    CMD response_cmd_1 = CMD("CMD09", room_id, "16$1");
+    CMD response_cmd_2 = CMD("CMD09", room_id, "16$2");
+    account_manager.send_message_to_account(response_cmd_1.cmd, player_1);
+    account_manager.send_message_to_account(response_cmd_2.cmd, player_2);
     break;
   }
   case 10: // decline challenge
@@ -296,9 +274,31 @@ void CMD_Handler(CMD cmd, int conn_sock)
     account_manager.set_player_accept_status(room_id, account_manager.get_player_from_token(cmd.token), status);
     break;
   }
-  case 12: // decline found match
+  case 13: // make a move
   {
-
+    size_t pos = cmd.body.find("#");
+    string str_x = cmd.body.substr(0, pos);
+    string str_y = cmd.body.substr(pos + 1);
+    int x = atoi(str_x.c_str());
+    int y = atoi(str_y.c_str());
+    int move = account_manager.make_a_move(cmd.token, x, y);
+    Room room = account_manager.find_room(cmd.token);
+    if (move == 4)
+    {
+      string move_and_role = cmd.body;
+      move_and_role.append("$1");
+      response_cmd = CMD("CMD13", move_and_role);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    if (move == 5)
+    {
+      string move_and_role = cmd.body;
+      move_and_role.append("$2");
+      response_cmd = CMD("CMD13", move_and_role);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
     break;
   }
   }

@@ -52,6 +52,8 @@ MainWindow::MainWindow(int argc, char *argv[])
     connect(data_receiver, &DataReceiver::created_room_signal, &home_page, &HomePage::handle_created_room_response);
     connect(data_receiver, &DataReceiver::declined_challenge_signal, &home_page, &HomePage::handle_declined_challenge_response);
     connect(data_receiver, &DataReceiver::accept_find_match_signal, &home_page, &HomePage::handle_accept_find_match_response);
+    connect(data_receiver, &DataReceiver::create_board_signal, &game_window, &gamewindow::handle_create_match_response);
+    connect(data_receiver, &DataReceiver::update_board_signal, &game_window, &gamewindow::handle_update_board_response);
     thread->start();
 
 }
