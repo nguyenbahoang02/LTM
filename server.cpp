@@ -42,6 +42,10 @@ void *handle_client(void *connect_sock)
     bytes_received = recv(conn_sock, buff, BUFF_SIZE - 1, 0);
     if (bytes_received <= 0)
     {
+      pthread_mutex_lock(&lock);
+      account_manager.log_out_account(conn_sock);
+      account_manager.update_accounts_file();
+      pthread_mutex_unlock(&lock);
       close(conn_sock);
       break;
     }
@@ -175,7 +179,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "0");
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -198,7 +203,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "0");
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -212,7 +218,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "0");
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -226,7 +233,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "0");
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -239,7 +247,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "0");
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -257,7 +266,8 @@ void CMD_Handler(CMD cmd, int conn_sock)
     bool check_valid = account_manager.check_user_token(cmd.token);
     if (!check_valid)
     {
-      response_cmd = CMD(cmd.header, "0");
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -299,8 +309,122 @@ void CMD_Handler(CMD cmd, int conn_sock)
       account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
       account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
     }
+    if (move == 1)
+    {
+      string move_and_role = cmd.body;
+      move_and_role.append("$1");
+      response_cmd = CMD("CMD14", move_and_role);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+      account_manager.change_room_to_history_room(cmd.token);
+      account_manager.print_accounts();
+    }
+    if (move == 2)
+    {
+      string move_and_role = cmd.body;
+      move_and_role.append("$2");
+      response_cmd = CMD("CMD14", move_and_role);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+      account_manager.change_room_to_history_room(cmd.token);
+      account_manager.print_accounts();
+    }
+    break;
+  }
+  case 15: // send rematch
+  {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    Room room = account_manager.find_history_room(cmd.body);
+    string username = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == username)
+    {
+      response_cmd = CMD("CMD15", cmd.body, "1");
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    if (room.player_2 == username)
+    {
+      response_cmd = CMD("CMD15", cmd.body, "1");
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 16: // accept rematch
+  {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    Room room = account_manager.find_history_room(cmd.body);
+    string player_1 = room.player_1;
+    string player_2 = room.player_2;
+    string room_id = account_manager.create_room(16, 16, 5, player_1, player_2);
+    CMD response_cmd_1 = CMD("CMD09", room_id, "16$1");
+    CMD response_cmd_2 = CMD("CMD09", room_id, "16$2");
+    account_manager.send_message_to_account(response_cmd_1.cmd, player_1);
+    account_manager.send_message_to_account(response_cmd_2.cmd, player_2);
+    break;
+  }
+  case 17: // decline rematch
+  {
+    bool check_valid = account_manager.check_user_token(cmd.token);
+    if (!check_valid)
+    {
+      response_cmd = CMD("CMD04", "0");
+      account_manager.log_out_account(conn_sock);
+      account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
+      break;
+    }
+    response_cmd = CMD("CMD10", account_manager.get_player_from_token(cmd.token));
+    account_manager.send_message_to_account(response_cmd.cmd, cmd.body);
+    break;
+  }
+  case 18: // pause request
+  {
+    Room room = account_manager.find_room(cmd.body);
+    string user = account_manager.get_player_from_token(cmd.token);
+    char message[100];
+    strcpy(message, user.c_str());
+    strcat(message, " want to pause");
+    response_cmd = CMD("CMD18", message);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 19: // accept/decline
+  {
+    Room room = account_manager.find_room(cmd.body);
+    if (cmd.body != "ACCEPT")
+    {
+      response_cmd = CMD("CMD19", "Your opponent doesn't want to pause");
+      string user = account_manager.get_player_from_token(cmd.token);
+      if (room.player_1 == user)
+      {
+        account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+      }
+      else
+      {
+        account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+      }
+    }
     break;
   }
   }
-  // account_manager.print_accounts();
+  account_manager.update_accounts_file();
 }

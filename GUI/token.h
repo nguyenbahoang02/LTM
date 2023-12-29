@@ -8,4 +8,5 @@ extern std::string token;
 extern std::string room_id;
 extern int role;
 extern bool your_turn;
+extern bool pause_state;
 #endif // TOKEN_H

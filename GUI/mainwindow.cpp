@@ -44,6 +44,7 @@ MainWindow::MainWindow(int argc, char *argv[])
     connect(thread, &QThread::started, data_receiver, &DataReceiver::GetSignal);
 
     connect(data_receiver, &DataReceiver::login_response_signal, &sign_in, &SignIn::handle_response);
+    connect(data_receiver, &DataReceiver::re_login_response_signal, &sign_in, &SignIn::handle_re_login_response);
     connect(data_receiver, &DataReceiver::signup_response_signal, &sign_up, &SignUp::handle_response);
     connect(data_receiver, &DataReceiver::logout_response_signal, &home_page, &HomePage::handle_logout_response);
     connect(data_receiver, &DataReceiver::find_match_response_signal, &home_page, &HomePage::handle_find_match_response);
@@ -54,6 +55,10 @@ MainWindow::MainWindow(int argc, char *argv[])
     connect(data_receiver, &DataReceiver::accept_find_match_signal, &home_page, &HomePage::handle_accept_find_match_response);
     connect(data_receiver, &DataReceiver::create_board_signal, &game_window, &gamewindow::handle_create_match_response);
     connect(data_receiver, &DataReceiver::update_board_signal, &game_window, &gamewindow::handle_update_board_response);
+    connect(data_receiver, &DataReceiver::winner_signal, &game_window, &gamewindow::handle_winner_response);
+    connect(data_receiver, &DataReceiver::rematch_signal, &game_window, &gamewindow::handle_rematch_response);
+    connect(data_receiver, &DataReceiver::pause_signal, &game_window, &gamewindow::handle_pause_response);
+    connect(data_receiver, &DataReceiver::pause_decline_signal, &game_window, &gamewindow::handle_pause_decline_response);
     thread->start();
 
 }

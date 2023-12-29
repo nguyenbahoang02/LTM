@@ -1,6 +1,5 @@
 #include "gamescene.h"
 #include "../cmd.h"
-#include "qpainter.h"
 #include "token.h"
 
 using namespace std;
@@ -16,12 +15,11 @@ void GameScene::update_board(string message){
     string move_y = move.substr(pos_2+1);
     int x = atoi(move_x.c_str());
     int y = atoi(move_y.c_str());
-    cout << x << " " << y << " " << role_int << endl;
     if(role!=role_int) your_turn = !your_turn;
     tile[x][y]->value = role_int;
-    if(role_int == 1){
-
-    }else {
-
+    if(role_int==1){
+        add_O(x,y,tile[x][y]->tile_size);
+    }else{
+        add_X(x,y,tile[x][y]->tile_size);
     }
 }

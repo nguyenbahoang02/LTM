@@ -22,6 +22,11 @@ signals:
     void accept_find_match_signal(std::string message);
     void create_board_signal(std::string message);
     void update_board_signal(std::string message);
+    void winner_signal(std::string message);
+    void rematch_signal(std::string message);
+    void re_login_response_signal(std::string message);
+    void pause_signal(std::string message);
+    void pause_decline_signal(std::string message);
 };
 
 #endif // DATARECEIVER_H

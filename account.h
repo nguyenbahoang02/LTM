@@ -29,15 +29,19 @@ typedef struct Account
   Token token;
   int elo;
   int connection_sock;
+  int play;
+  int win;
   Account()
   {
   }
-  Account(string _username, string _password, char _status, int _elo)
+  Account(string _username, string _password, char _status, int _elo, int _play, int _win)
   {
     username = _username;
     password = _password;
     status = _status;
     elo = _elo;
+    play = _play;
+    win = _win;
   }
   bool is_login()
   {
@@ -79,9 +83,93 @@ typedef struct AccountManager
   list<Account> accounts;
   list<Account> finding_match_players;
   list<Room> rooms;
+  list<Room> history_rooms;
+  void update_accounts_file()
+  {
+    FILE *f = fopen("account.txt", "w");
+    for (Account &a : accounts)
+    {
+      fprintf(f, "%s %s %c %d %d %d\n", a.username.c_str(), a.password.c_str(), a.status, a.elo, a.play, a.win);
+    }
+    fclose(f);
+  }
+  int count_elo_gained(bool win, int player_1_elo, int player_2_elo, int player_1_win, int player_1_play)
+  {
+    int e;
+    if (win)
+    {
+      if (player_1_elo != player_2_elo)
+      {
+        e = (int)((30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * ((double)player_1_win / (double)player_1_play + 0.5));
+      }
+      else
+      {
+        e = (int)((30) * ((double)player_1_win / (double)player_1_play + 0.5));
+      }
+    }
+    else
+    {
+      if (player_1_elo != player_2_elo)
+      {
+        e = (int)((-30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * (1.5 - (double)player_1_win / (double)player_1_play));
+      }
+      else
+      {
+        e = (int)((-30) * (1.5 - (double)player_1_win / (double)player_1_play));
+      }
+    }
+    return e;
+  }
+  void update_elo(string room_id)
+  {
+    Account *account_1;
+    Account *account_2;
+    for (Room r : rooms)
+    {
+      if (r.room_id == room_id)
+      {
+        for (Account &a : accounts)
+        {
+          if (a.username == r.player_1)
+          {
+            account_1 = &a;
+          }
+          if (a.username == r.player_2)
+          {
+            account_2 = &a;
+          }
+        }
+        if (r.winner == r.player_1)
+        {
+          account_1->elo += count_elo_gained(true, account_1->elo, account_2->elo, account_1->win, account_1->play);
+          account_1->play++;
+          account_1->win++;
+          account_2->elo += count_elo_gained(false, account_2->elo, account_1->elo, account_2->win, account_2->play);
+          account_2->play++;
+        }
+        if (r.winner == r.player_2)
+        {
+          account_2->elo += count_elo_gained(true, account_2->elo, account_1->elo, account_2->win, account_2->play);
+          account_2->play++;
+          account_2->win++;
+          account_1->elo += count_elo_gained(false, account_1->elo, account_2->elo, account_1->win, account_1->play);
+          account_1->play++;
+        }
+        break;
+      }
+    }
+  }
   Room find_room(string room_id)
   {
     for (Room r : rooms)
+    {
+      if (r.room_id == room_id)
+        return r;
+    }
+  }
+  Room find_history_room(string room_id)
+  {
+    for (Room r : history_rooms)
     {
       if (r.room_id == room_id)
         return r;
@@ -97,6 +185,23 @@ typedef struct AccountManager
         new_room_list.push_back(r);
       }
     }
+  }
+  void change_room_to_history_room(string room_id)
+  {
+    list<Room> new_room_list;
+    for (Room r : rooms)
+    {
+      if (r.room_id != room_id)
+      {
+        new_room_list.push_back(r);
+      }
+      else
+      {
+        history_rooms.push_back(r);
+      }
+    }
+    update_elo(room_id);
+    rooms = new_room_list;
   }
   int make_a_move(string room_id, int x, int y)
   {
@@ -128,8 +233,8 @@ typedef struct AccountManager
         {
           if (r.player_1_accept_status == true && r.player_2_accept_status == true)
           {
-            send_message_to_account("CMD12_16_1?padding", r.player_1);
-            send_message_to_account("CMD12_16_2?padding", r.player_2);
+            send_message_to_account("CMD12_16$1?padding", r.player_1);
+            send_message_to_account("CMD12_16$2?padding", r.player_2);
             return;
           }
           if (r.player_1_accept_status == true && r.player_2_accept_status == false)
@@ -177,32 +282,6 @@ typedef struct AccountManager
     rooms.push_back(Room(width, height, win_condition, _player_1, _player_2, room_id));
     return room_id;
   }
-  void pause_match(string id)
-  {
-    for (Room &r : rooms)
-    {
-      if (r.room_id == id)
-      {
-        r.pause();
-        send_message_to_account("CMD15_0", r.player_1);
-        send_message_to_account("CMD15_0", r.player_2);
-        return;
-      }
-    }
-  }
-  void un_pause_match(string id)
-  {
-    for (Room &r : rooms)
-    {
-      if (r.room_id == id)
-      {
-        r.un_pause();
-        send_message_to_account("CMD15_1", r.player_1);
-        send_message_to_account("CMD15_1", r.player_2);
-        return;
-      }
-    }
-  }
   string get_player_from_token(string token)
   {
     for (Account a : accounts)
@@ -229,6 +308,16 @@ typedef struct AccountManager
     for (Account &a : accounts)
     {
       if (a.token.token == token)
+      {
+        a.log_out();
+      }
+    }
+  }
+  void log_out_account(int conn_sock)
+  {
+    for (Account &a : accounts)
+    {
+      if (a.connection_sock == conn_sock)
       {
         a.log_out();
       }
@@ -265,7 +354,7 @@ typedef struct AccountManager
       if (a.username == username)
         return 0;
     }
-    Account new_acc = Account(username, password, '0', 0);
+    Account new_acc = Account(username, password, '0', 0, 0, 0);
     accounts.push_back(new_acc);
     return 1;
   }
@@ -273,7 +362,7 @@ typedef struct AccountManager
   {
     for (Account a : accounts)
     {
-      cout << a.username << "\t" << a.password << "\t" << a.status << endl;
+      cout << a.username << "\t" << a.password << "\t" << a.status << "\t" << a.elo << endl;
     }
   }
   // send message to an account
@@ -361,11 +450,13 @@ typedef struct AccountManager
     char password[1024];
     char status;
     int elo;
+    int play;
+    int win;
     if (f == NULL)
       return;
-    while (fscanf(f, "%s %s %c %d", username, password, &status, &elo) == 4)
+    while (fscanf(f, "%s %s %c %d %d %d", username, password, &status, &elo, &play, &win) == 6)
     {
-      Account acc = Account(username, password, status, elo);
+      Account acc = Account(username, password, status, elo, play, win);
       accounts.push_back(acc);
     }
     fclose(f);

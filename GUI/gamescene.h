@@ -2,6 +2,7 @@
 #define GAMESCENE_H
 
 #include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
 #include "customrect.h"
 
 class GameScene : public QGraphicsScene
@@ -24,6 +25,26 @@ public:
         }
     };
     CustomRect *tile[100][100];
+    void add_O(int x, int y, qreal tile_size){
+        qreal start_x = (x-1)*tile_size;
+        qreal start_y = (y-1)*tile_size;
+        QGraphicsTextItem * circle = new QGraphicsTextItem;
+        circle->setPos(start_x+tile_size/6,start_y+tile_size/14);
+        circle->setPlainText("O");
+        circle->setDefaultTextColor(Qt::blue);
+
+        this->addItem(circle);
+    }
+    void add_X(int x, int y, qreal tile_size){
+        qreal start_x = (x-1)*tile_size;
+        qreal start_y = (y-1)*tile_size;
+        QGraphicsTextItem * cross = new QGraphicsTextItem;
+        cross->setPos(start_x+tile_size/6,start_y+tile_size/14);
+        cross->setPlainText("X");
+        cross->setDefaultTextColor(Qt::red);
+
+        this->addItem(cross);
+    }
 public slots:
     void update_board(std::string message);
 };

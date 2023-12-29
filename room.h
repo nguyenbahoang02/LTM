@@ -13,6 +13,8 @@ typedef struct Room
   Board board;
   int player_turn;
   int game_state; // 0=paused 1=is playing 2=over
+  list<Move> moves;
+  string winner;
   Room(int width, int height, int win_condition, string _player_1, string _player_2, string _room_id)
   {
     player_turn = 1;
@@ -35,6 +37,10 @@ typedef struct Room
       if (board.check_winner(move) == move.flag)
       {
         game_state = 2;
+        if (player_turn == 1)
+          winner = player_1;
+        else
+          winner = player_2;
         return move.flag;
       }
       player_turn = player_turn == 1 ? 2 : 1;

@@ -18,6 +18,7 @@ public:
 public slots:
     void on_sign_up_clicked();
     void handle_response(std::string message);
+    void handle_re_login_response(std::string message);
 
 private slots:
     void on_sign_in_clicked();

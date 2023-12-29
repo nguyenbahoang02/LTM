@@ -2,7 +2,10 @@
 #define CUSTOMRECT_H
 
 #include <QGraphicsRectItem>
+#include <QPainter>
+#include <QPaintEvent>
 #include <QDebug>
+
 class CustomRect : public QGraphicsRectItem{
 public :
     int x;
@@ -17,7 +20,6 @@ public :
         tile_size = _tile_size;
         setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     }
-    void send_update_board_signal();
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 };

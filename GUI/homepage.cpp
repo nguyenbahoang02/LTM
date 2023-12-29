@@ -86,11 +86,12 @@ void HomePage::handle_find_match_response(string message)
         msg_box.setDefaultButton(accept_button);
         msg_box.exec();
         string status = room_id;
+        string room_accept_status = room_id;
         if (msg_box.clickedButton() == accept_button) {
-            CMD cmd = CMD("CMD11", token, room_id.append("%ACCEPT"));
+            CMD cmd = CMD("CMD11", token, room_accept_status.append("%ACCEPT"));
             ::send(server_sock, cmd.cmd, strlen(cmd.cmd), 0);
         } else if (msg_box.clickedButton() == decline_button) {
-            CMD cmd = CMD("CMD11", token, room_id.append("%DECLINE"));
+            CMD cmd = CMD("CMD11", token, room_accept_status.append("%DECLINE"));
             ::send(server_sock, cmd.cmd, strlen(cmd.cmd), 0);
         }
         change_find_btn_state();

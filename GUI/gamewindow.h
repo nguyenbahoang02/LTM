@@ -22,6 +22,13 @@ signals:
 public slots:
     void handle_create_match_response(std::string);
     void handle_update_board_response(std::string);
+    void handle_winner_response(std::string);
+    void handle_rematch_response(std::string);
+    void handle_pause_response(std::string);
+    void handle_pause_decline_response(std::string);
+
+private slots:
+    void on_pause_clicked();
 
 private:
     Ui::gamewindow *ui;

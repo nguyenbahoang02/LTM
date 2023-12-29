@@ -54,3 +54,8 @@ void SignIn::handle_response(string message){
         QMessageBox::critical(this,tr("LOGIN"),tr(response_cmd.body.c_str()));
     }
 }
+
+void SignIn::handle_re_login_response(string message){
+    stackedWidget->setCurrentIndex(0);
+    QMessageBox::information(this,tr("Relogin"),tr("Your session has ended please relogin"));
+}

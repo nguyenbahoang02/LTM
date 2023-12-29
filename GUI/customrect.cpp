@@ -2,11 +2,8 @@
 #include "token.h"
 #include "../cmd.h"
 
-void CustomRect::send_update_board_signal(){
-
-}
 void CustomRect::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    if(!your_turn||value!=0)
+    if(!your_turn||value!=0||pause_state)
         return;
     your_turn = !your_turn;
     stringstream str_s_1;
@@ -21,3 +18,4 @@ void CustomRect::mousePressEvent(QGraphicsSceneMouseEvent *event){
     ::send(server_sock,cmd.cmd,strlen(cmd.cmd),0);
     QGraphicsRectItem::mousePressEvent(event);
 }
+

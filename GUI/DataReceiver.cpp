@@ -27,6 +27,10 @@ void DataReceiver::GetSignal() {
             emit logout_response_signal(message);
             break;
         }
+        case 4:{
+            emit re_login_response_signal(message);
+            break;
+        }
         case 5:{
             emit player_list_signal(message);
             break;
@@ -59,6 +63,22 @@ void DataReceiver::GetSignal() {
         }
         case 13:{
             emit update_board_signal(message);
+            break;
+        }
+        case 14:{
+            emit winner_signal(message);
+            break;
+        }
+        case 15:{
+            emit rematch_signal(message);
+            break;
+        }
+        case 18:{
+            emit pause_signal(message);
+            break;
+        }
+        case 19:{
+            emit pause_decline_signal(message);
             break;
         }
         }
