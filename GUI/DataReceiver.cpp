@@ -78,11 +78,41 @@ void DataReceiver::GetSignal() {
             break;
         }
         case 19:{
-            emit pause_decline_signal(message);
+            if(cmd.body!="1"){
+                emit pause_decline_signal(message);
+            }else {
+                emit pause_accept_signal(message);
+            }
+            break;
+        }
+        case 20:{
+            emit continue_signal(message);
+            break;
+        }
+        case 21:{
+            if(cmd.body!="1"){
+                emit continue_decline_signal(message);
+            }else{
+                emit continue_accept_signal(message);
+            }
+            break;
+        }
+        case 24:{
+            emit draw_signal(message);
+            break;
+        }
+        case 25:{
+            if(cmd.body!="1"){
+                emit draw_decline_signal(message);
+            }else{
+                emit draw_accept_signal(message);
+            }
+            break;
+        }
+        case 26:{
+            emit chat_signal(message);
             break;
         }
         }
-
-
     }
 }

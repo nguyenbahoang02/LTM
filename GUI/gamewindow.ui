@@ -72,7 +72,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="message">
    <property name="geometry">
     <rect>
      <x>570</x>
@@ -81,8 +81,11 @@
      <height>25</height>
     </rect>
    </property>
+   <property name="text">
+    <string/>
+   </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="send">
    <property name="geometry">
     <rect>
      <x>750</x>
@@ -98,7 +101,7 @@
   <widget class="QPushButton" name="pause">
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>140</x>
      <y>530</y>
      <width>88</width>
      <height>25</height>
@@ -106,19 +109,6 @@
    </property>
    <property name="text">
     <string>Pause</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>530</y>
-     <width>88</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Surrender</string>
    </property>
   </widget>
   <widget class="QGraphicsView" name="graphicsView">
@@ -129,6 +119,32 @@
      <width>450</width>
      <height>450</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="draw">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>530</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Draw</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="return_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>88</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Return</string>
    </property>
   </widget>
  </widget>

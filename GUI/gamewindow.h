@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "gamescene.h"
+#include <QVBoxLayout>
 
 namespace Ui {
 class gamewindow;
@@ -25,14 +26,29 @@ public slots:
     void handle_winner_response(std::string);
     void handle_rematch_response(std::string);
     void handle_pause_response(std::string);
+    void handle_pause_accept_response(std::string);
     void handle_pause_decline_response(std::string);
+    void handle_continue_response(std::string);
+    void handle_continue_accept_response(std::string);
+    void handle_continue_decline_response(std::string);
+    void handle_draw_response(std::string);
+    void handle_draw_accept_response(std::string);
+    void handle_draw_decline_response(std::string);
+    void handle_chat_response(std::string);
 
 private slots:
     void on_pause_clicked();
 
+    void on_draw_clicked();
+
+    void on_return_2_clicked();
+
+    void on_send_clicked();
+
 private:
     Ui::gamewindow *ui;
     GameScene *scene;
+    QVBoxLayout *vbox;
 };
 
 #endif // GAMEWINDOW_H

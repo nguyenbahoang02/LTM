@@ -58,7 +58,16 @@ MainWindow::MainWindow(int argc, char *argv[])
     connect(data_receiver, &DataReceiver::winner_signal, &game_window, &gamewindow::handle_winner_response);
     connect(data_receiver, &DataReceiver::rematch_signal, &game_window, &gamewindow::handle_rematch_response);
     connect(data_receiver, &DataReceiver::pause_signal, &game_window, &gamewindow::handle_pause_response);
+    connect(data_receiver, &DataReceiver::pause_accept_signal, &game_window, &gamewindow::handle_pause_accept_response);
     connect(data_receiver, &DataReceiver::pause_decline_signal, &game_window, &gamewindow::handle_pause_decline_response);
+    connect(data_receiver, &DataReceiver::continue_signal, &game_window, &gamewindow::handle_continue_response);
+    connect(data_receiver, &DataReceiver::continue_accept_signal, &game_window, &gamewindow::handle_continue_accept_response);
+    connect(data_receiver, &DataReceiver::continue_decline_signal, &game_window, &gamewindow::handle_continue_decline_response);
+    connect(data_receiver, &DataReceiver::draw_signal, &game_window, &gamewindow::handle_draw_response);
+    connect(data_receiver, &DataReceiver::draw_accept_signal, &game_window, &gamewindow::handle_draw_accept_response);
+    connect(data_receiver, &DataReceiver::draw_decline_signal, &game_window, &gamewindow::handle_draw_decline_response);
+    connect(data_receiver, &DataReceiver::chat_signal, &game_window, &gamewindow::handle_chat_response);
+
     thread->start();
 
 }

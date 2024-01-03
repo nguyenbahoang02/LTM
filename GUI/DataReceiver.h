@@ -26,7 +26,15 @@ signals:
     void rematch_signal(std::string message);
     void re_login_response_signal(std::string message);
     void pause_signal(std::string message);
+    void pause_accept_signal(std::string message);
     void pause_decline_signal(std::string message);
+    void continue_signal(std::string message);
+    void continue_accept_signal(std::string message);
+    void continue_decline_signal(std::string message);
+    void draw_signal(std::string message);
+    void draw_accept_signal(std::string message);
+    void draw_decline_signal(std::string message);
+    void chat_signal(std::string message);
 };
 
 #endif // DATARECEIVER_H

@@ -9,4 +9,6 @@ extern std::string room_id;
 extern int role;
 extern bool your_turn;
 extern bool pause_state;
+extern bool wait_for_response;
+extern bool game_over;
 #endif // TOKEN_H

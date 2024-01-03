@@ -407,23 +407,144 @@ void CMD_Handler(CMD cmd, int conn_sock)
     }
     break;
   }
-  case 19: // accept/decline
+  case 19: // accept
   {
     Room room = account_manager.find_room(cmd.body);
-    if (cmd.body != "ACCEPT")
+    response_cmd = CMD("CMD19", "1");
+    string user = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == user)
     {
-      response_cmd = CMD("CMD19", "Your opponent doesn't want to pause");
-      string user = account_manager.get_player_from_token(cmd.token);
-      if (room.player_1 == user)
-      {
-        account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
-      }
-      else
-      {
-        account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
-      }
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
     }
     break;
+  }
+  case 20: // decline
+  {
+    Room room = account_manager.find_room(cmd.body);
+    response_cmd = CMD("CMD19", "Your opponent doesn't want to pause");
+    string user = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 21: // continue request
+  {
+    Room room = account_manager.find_room(cmd.body);
+    string user = account_manager.get_player_from_token(cmd.token);
+    char message[100];
+    strcpy(message, user.c_str());
+    strcat(message, " want to continue");
+    response_cmd = CMD("CMD20", message);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 22: // accept
+  {
+    Room room = account_manager.find_room(cmd.body);
+    response_cmd = CMD("CMD21", "1");
+    string user = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 23: // decline
+  {
+    Room room = account_manager.find_room(cmd.body);
+    response_cmd = CMD("CMD21", "Your opponent doesn't want to continue");
+    string user = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 24: // draw request
+  {
+    Room room = account_manager.find_room(cmd.body);
+    string user = account_manager.get_player_from_token(cmd.token);
+    char message[100];
+    strcpy(message, user.c_str());
+    strcat(message, " propose a draw");
+    response_cmd = CMD("CMD24", message);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 25: // accept
+  {
+    Room room = account_manager.find_room(cmd.body);
+    response_cmd = CMD("CMD25", "1");
+    string user = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 26: // decline
+  {
+    Room room = account_manager.find_room(cmd.body);
+    response_cmd = CMD("CMD25", "Your opponent declined");
+    string user = account_manager.get_player_from_token(cmd.token);
+    if (room.player_1 == user)
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    }
+    else
+    {
+      account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
+    }
+    break;
+  }
+  case 27: // chat
+  {
+    size_t pos = cmd.body.find("*");
+    string room_id = cmd.body.substr(0, pos);
+    string message = cmd.body.substr(pos + 1);
+    Room room = account_manager.find_room(room_id);
+    string user = account_manager.get_player_from_token(cmd.token);
+    user.append("*");
+    user.append(message);
+    response_cmd = CMD("CMD26", user);
+    account_manager.send_message_to_account(response_cmd.cmd, room.player_2);
+    account_manager.send_message_to_account(response_cmd.cmd, room.player_1);
   }
   }
   account_manager.update_accounts_file();
