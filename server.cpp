@@ -27,7 +27,7 @@ void *handle_match(void *arg)
     {
       account_manager.send_message_to_account(cmd.cmd, s.connection_sock);
     }
-    account_manager.create_room(16, 16, 5, matched_players.front().username, matched_players.back().username, generate_token());
+    account_manager.create_room(16, 16, 5, matched_players.front().username, matched_players.back().username, cmd.token);
   }
 }
 

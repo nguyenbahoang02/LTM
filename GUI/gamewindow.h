@@ -45,6 +45,8 @@ private slots:
 
     void on_send_clicked();
 
+    void on_message_returnPressed();
+
 private:
     Ui::gamewindow *ui;
     GameScene *scene;

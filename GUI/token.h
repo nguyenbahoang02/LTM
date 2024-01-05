@@ -11,4 +11,5 @@ extern bool your_turn;
 extern bool pause_state;
 extern bool wait_for_response;
 extern bool game_over;
+extern bool connectable;
 #endif // TOKEN_H

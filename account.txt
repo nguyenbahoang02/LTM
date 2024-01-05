@@ -1,5 +1,6 @@
 hoang hoang 0 1100 100 50
-hieu hieu 0 1000 100 50
-anh anh 0 1200 100 50
-hung hung 0 900 100 50
-quang quang 0 1300 100 50
+hieu hieu 0 1013 104 52
+anh anh 0 1207 103 52
+hung hung 0 938 101 51
+quang quang 0 1262 101 50
+hanh hanh 0 0 1 0

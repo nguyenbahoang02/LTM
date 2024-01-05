@@ -18,6 +18,7 @@ bool your_turn;
 bool pause_state;
 bool wait_for_response;
 bool game_over;
+bool connectable;
 
 gamewindow::gamewindow(QWidget *parent)
     : QWidget(parent)
@@ -28,8 +29,6 @@ gamewindow::gamewindow(QWidget *parent)
             this, &gamewindow::on_pause_clicked);
     connect(ui->draw, &QPushButton::clicked,
             this, &gamewindow::on_draw_clicked);
-    connect(ui->return_2,&QPushButton::clicked,
-            this,&gamewindow::on_return_2_clicked);
 
 }
 
@@ -47,13 +46,13 @@ void gamewindow::handle_create_match_response(string message){
     your_turn = role == 1;
     wait_for_response = false;
     game_over = false;
+    pause_state = false;
     int size = atoi(str_size.c_str());
     scene = new GameScene(size);
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
-    pause_state = false;
     if(your_turn){
         ui->player_turn->setText("Your turn");
     }else {
@@ -64,7 +63,7 @@ void gamewindow::handle_create_match_response(string message){
     scrollContent = new QWidget();
     QVBoxLayout *scrollLayout = new QVBoxLayout(scrollContent);
     vbox = scrollLayout;
-
+    vbox->setAlignment(Qt::AlignTop);
     QScrollArea *scrollArea = ui->scrollArea;
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollContent);
@@ -74,6 +73,11 @@ void gamewindow::handle_create_match_response(string message){
 
 void gamewindow::handle_update_board_response(string message){
     emit update_board(message);
+    CMD response_cmd = CMD(message);
+    size_t pos_1 = response_cmd.body.find("$");
+    string role_str = response_cmd.body.substr(pos_1+1);
+    int role_int = atoi(role_str.c_str());
+    if(role!=role_int) your_turn = !your_turn;
     if(your_turn){
         ui->player_turn->setText("Your turn");
     }else {
@@ -134,6 +138,7 @@ void gamewindow::handle_rematch_response(string message){
 
 void gamewindow::on_pause_clicked()
 {
+    if(game_over) return;
     if(!pause_state&&!wait_for_response){
         pause_state = true;
         wait_for_response = true;
@@ -221,6 +226,7 @@ void gamewindow::handle_continue_accept_response(string message){
 
 void gamewindow::on_draw_clicked()
 {
+    if(game_over) return;
     if(!wait_for_response){
         wait_for_response = true;
         CMD cmd = CMD("CMD24",token,room_id);
@@ -266,6 +272,7 @@ void gamewindow::handle_draw_accept_response(string message){
 void gamewindow::on_return_2_clicked()
 {
     if(game_over){
+        scene->destroyed();
         stackedWidget->setCurrentIndex(2);
     }else{
         QMessageBox::information(this, tr("Can't"), tr("Can't return while match is going"));
@@ -275,12 +282,14 @@ void gamewindow::on_return_2_clicked()
 
 void gamewindow::on_send_clicked()
 {
+    if(game_over) return;
     if(ui->message->text().toStdString()!=""){
         string message = room_id;
         message.append("*");
         message.append(ui->message->text().toStdString());
         CMD cmd = CMD("CMD27",token,message);
         ::send(server_sock,cmd.cmd,strlen(cmd.cmd),0);
+        ui->message->setText("");
     }
 }
 
@@ -295,6 +304,20 @@ void gamewindow::handle_chat_response(string message){
     chat_message.append(chat);
 
     QLabel *item_name = new QLabel(chat_message.c_str());
-
+    item_name->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     vbox->addWidget(item_name);
 }
+
+void gamewindow::on_message_returnPressed()
+{
+    if(game_over) return;
+    if(ui->message->text().toStdString()!=""){
+        string message = room_id;
+        message.append("*");
+        message.append(ui->message->text().toStdString());
+        CMD cmd = CMD("CMD27",token,message);
+        ::send(server_sock,cmd.cmd,strlen(cmd.cmd),0);
+        ui->message->setText("");
+    }
+}
+

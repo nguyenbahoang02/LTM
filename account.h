@@ -100,22 +100,50 @@ typedef struct AccountManager
     {
       if (player_1_elo != player_2_elo)
       {
-        e = (int)((30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * ((double)player_1_win / (double)player_1_play + 0.5));
+        if (player_1_play == 0)
+        {
+          e = (int)((30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * (1 + 0.5));
+        }
+        else
+        {
+          e = (int)((30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * ((double)player_1_win / (double)player_1_play + 0.5));
+        }
       }
       else
       {
-        e = (int)((30) * ((double)player_1_win / (double)player_1_play + 0.5));
+        if (player_1_play == 0)
+        {
+          e = (int)((30) * (1 + 0.5));
+        }
+        else
+        {
+          e = (int)((30) * ((double)player_1_win / (double)player_1_play + 0.5));
+        }
       }
     }
     else
     {
       if (player_1_elo != player_2_elo)
       {
-        e = (int)((-30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * (1.5 - (double)player_1_win / (double)player_1_play));
+        if (player_1_play == 0)
+        {
+          e = (int)((-30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * (1.5 - 1));
+        }
+        else
+        {
+          e = (int)((-30 + (player_2_elo - player_1_elo) / abs(player_1_elo - player_2_elo) * log10(abs(player_1_elo - player_2_elo)) / log10(2)) * (1.5 - (double)player_1_win / (double)player_1_play));
+        }
       }
       else
       {
-        e = (int)((-30) * (1.5 - (double)player_1_win / (double)player_1_play));
+        if (player_1_play == 0)
+        {
+          e = (int)((-30) * (1.5 - 1));
+        }
+        else
+        {
+          e = (int)((-30) * (1.5 - (double)player_1_win / (double)player_1_play));
+        }
       }
     }
     return e;
@@ -146,6 +174,8 @@ typedef struct AccountManager
           account_1->win++;
           account_2->elo += count_elo_gained(false, account_2->elo, account_1->elo, account_2->win, account_2->play);
           account_2->play++;
+          if (account_2->elo < 0)
+            account_2->elo = 0;
         }
         if (r.winner == r.player_2)
         {
@@ -154,6 +184,8 @@ typedef struct AccountManager
           account_2->win++;
           account_1->elo += count_elo_gained(false, account_1->elo, account_2->elo, account_1->win, account_1->play);
           account_1->play++;
+          if (account_1->elo < 0)
+            account_1->elo = 0;
         }
         break;
       }
@@ -323,7 +355,7 @@ typedef struct AccountManager
       }
     }
   }
-  // 0=wrong password 1=login success 2=already logged in at another location
+  // 0=wrong password token=login success 2=already logged in at another location
   string log_in_account(string username, string password, int conn_sock)
   {
     for (Account &a : accounts)

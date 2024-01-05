@@ -71,31 +71,23 @@ void HomePage::handle_find_match_response(string message)
 {
     CMD response_cmd = CMD(message);
     room_id = response_cmd.token;
-    if (response_cmd.body[0] == '0')
-    {
-        QMessageBox::critical(this, tr("LOGOUT"), tr("YOU NEED TO RELOGIN"));
-        stackedWidget->setCurrentIndex(0);
-    }
-    else
-    {
-        QMessageBox msg_box(QMessageBox::Question, "FOUND A MATCH", "Found a match, accept ?", QMessageBox::NoButton, this);
+    QMessageBox msg_box(QMessageBox::Question, "FOUND A MATCH", "Found a match, accept ?", QMessageBox::NoButton, this);
 
-        QPushButton *accept_button = msg_box.addButton(tr("Accept"), QMessageBox::AcceptRole);
-        QPushButton *decline_button = msg_box.addButton(tr("Decline"), QMessageBox::RejectRole);
+    QPushButton *accept_button = msg_box.addButton(tr("Accept"), QMessageBox::AcceptRole);
+    QPushButton *decline_button = msg_box.addButton(tr("Decline"), QMessageBox::RejectRole);
 
-        msg_box.setDefaultButton(accept_button);
-        msg_box.exec();
-        string status = room_id;
-        string room_accept_status = room_id;
-        if (msg_box.clickedButton() == accept_button) {
-            CMD cmd = CMD("CMD11", token, room_accept_status.append("%ACCEPT"));
-            ::send(server_sock, cmd.cmd, strlen(cmd.cmd), 0);
-        } else if (msg_box.clickedButton() == decline_button) {
-            CMD cmd = CMD("CMD11", token, room_accept_status.append("%DECLINE"));
-            ::send(server_sock, cmd.cmd, strlen(cmd.cmd), 0);
-        }
-        change_find_btn_state();
+    msg_box.setDefaultButton(accept_button);
+    msg_box.exec();
+    string status = room_id;
+    string room_accept_status = room_id;
+    if (msg_box.clickedButton() == accept_button) {
+        CMD cmd = CMD("CMD11", token, room_accept_status.append("%ACCEPT"));
+        ::send(server_sock, cmd.cmd, strlen(cmd.cmd), 0);
+    } else if (msg_box.clickedButton() == decline_button) {
+        CMD cmd = CMD("CMD11", token, room_accept_status.append("%DECLINE"));
+        ::send(server_sock, cmd.cmd, strlen(cmd.cmd), 0);
     }
+    change_find_btn_state();
 }
 
 list<string> extract_string_list(const std::string &input)
@@ -118,6 +110,7 @@ void HomePage::handle_player_list_response(string message)
     QWidget *scrollContent = ui->scrollAreaWidgetContents;
     scrollContent = new QWidget();
     QVBoxLayout *scrollLayout = new QVBoxLayout(scrollContent);
+    scrollLayout->setAlignment(Qt::AlignTop);
     for (string s : online_players)
     {
         QGroupBox *item = new QGroupBox();
