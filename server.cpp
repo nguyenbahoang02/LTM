@@ -234,7 +234,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     if (!check_valid)
     {
       response_cmd = CMD("CMD04", "0");
+      pthread_mutex_lock(&lock);
       account_manager.log_out_account(conn_sock);
+      pthread_mutex_unlock(&lock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -248,7 +250,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     if (!check_valid)
     {
       response_cmd = CMD("CMD04", "0");
+      pthread_mutex_lock(&lock);
       account_manager.log_out_account(conn_sock);
+      pthread_mutex_unlock(&lock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -267,7 +271,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     if (!check_valid)
     {
       response_cmd = CMD("CMD04", "0");
+      pthread_mutex_lock(&lock);
       account_manager.log_out_account(conn_sock);
+      pthread_mutex_unlock(&lock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -281,7 +287,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     string room_id = cmd.body.substr(0, pos);
     string accept_status = cmd.body.substr(pos + 1);
     bool status = accept_status == "ACCEPT" ? true : false;
+    pthread_mutex_lock(&lock);
     account_manager.set_player_accept_status(room_id, account_manager.get_player_from_token(cmd.token), status);
+    pthread_mutex_unlock(&lock);
     break;
   }
   case 13: // make a move
@@ -337,7 +345,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     if (!check_valid)
     {
       response_cmd = CMD("CMD04", "0");
+      pthread_mutex_lock(&lock);
       account_manager.log_out_account(conn_sock);
+      pthread_mutex_unlock(&lock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -361,7 +371,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     if (!check_valid)
     {
       response_cmd = CMD("CMD04", "0");
+      pthread_mutex_lock(&lock);
       account_manager.log_out_account(conn_sock);
+      pthread_mutex_unlock(&lock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }
@@ -381,7 +393,9 @@ void CMD_Handler(CMD cmd, int conn_sock)
     if (!check_valid)
     {
       response_cmd = CMD("CMD04", "0");
+      pthread_mutex_lock(&lock);
       account_manager.log_out_account(conn_sock);
+      pthread_mutex_unlock(&lock);
       account_manager.send_message_to_account(response_cmd.cmd, conn_sock);
       break;
     }

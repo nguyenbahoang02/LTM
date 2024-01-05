@@ -1,0 +1,9 @@
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/GUI.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/list_install_components.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/install.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/install/local.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/install/strip.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/GUI_autogen_timestamp_deps.dir
+/home/tuananh/Desktop/LTM/build-GUI-Desktop_Qt_6_6_1_GCC_64bit-Debug/CMakeFiles/GUI_autogen.dir

@@ -86,6 +86,7 @@ void gamewindow::handle_update_board_response(string message){
 }
 
 void gamewindow::handle_winner_response(string message){
+    emit update_board(message);
     CMD response_cmd = CMD(message);
     size_t pos_1 = response_cmd.body.find("$");
     string move = response_cmd.body.substr(0,pos_1);
@@ -115,7 +116,7 @@ void gamewindow::handle_winner_response(string message){
         ::send(server_sock,cmd.cmd,strlen(cmd.cmd),0);
     }
 
-    emit update_board(message);
+
 }
 
 void gamewindow::handle_rematch_response(string message){

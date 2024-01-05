@@ -170,6 +170,7 @@ void HomePage::handle_declined_challenge_response(string message){
     CMD response_cmd = CMD(message);
     char buff[BUFF_SIZE];
     strcpy(buff,response_cmd.body.c_str());
+    strcat(buff," declined");
     QMessageBox::information(this, tr("DECLINED"), tr(buff));
 }
 

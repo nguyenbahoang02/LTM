@@ -500,7 +500,7 @@ typedef struct AccountManager
     {
       if (a.status == '0')
         continue;
-      if (a.token.token != token)
+      if (a.token.token != token && a.status == '1')
       {
         online_players.push_back(a.username);
       }
